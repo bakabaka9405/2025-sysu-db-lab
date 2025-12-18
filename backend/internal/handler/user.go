@@ -23,7 +23,7 @@ func NewUserHandler(handler *Handler, userService service.UserService) *UserHand
 // Register godoc
 // @Summary 用户注册
 // @Schemes
-// @Description 目前只支持邮箱登录
+// @Description 注册新用户，需要提供用户名、密码、真实姓名和手机号
 // @Tags 用户模块
 // @Accept json
 // @Produce json
@@ -49,7 +49,7 @@ func (h *UserHandler) Register(ctx *gin.Context) {
 // Login godoc
 // @Summary 账号登录
 // @Schemes
-// @Description
+// @Description 支持用户名或手机号登录
 // @Tags 用户模块
 // @Accept json
 // @Produce json
@@ -63,20 +63,19 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 		return
 	}
 
-	token, err := h.userService.Login(ctx, &req)
+	data, err := h.userService.Login(ctx, &req)
 	if err != nil {
 		v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized, nil)
 		return
 	}
-	v1.HandleSuccess(ctx, v1.LoginResponseData{
-		AccessToken: token,
-	})
+
+	v1.HandleSuccess(ctx, data)
 }
 
 // GetProfile godoc
 // @Summary 获取用户信息
 // @Schemes
-// @Description
+// @Description 获取当前登录用户的详细信息
 // @Tags 用户模块
 // @Accept json
 // @Produce json
@@ -85,7 +84,7 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 // @Router /user [get]
 func (h *UserHandler) GetProfile(ctx *gin.Context) {
 	userId := GetUserIdFromCtx(ctx)
-	if userId == "" {
+	if userId == 0 {
 		v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized, nil)
 		return
 	}
@@ -102,7 +101,7 @@ func (h *UserHandler) GetProfile(ctx *gin.Context) {
 // UpdateProfile godoc
 // @Summary 修改用户信息
 // @Schemes
-// @Description
+// @Description 更新当前用户的个人信息
 // @Tags 用户模块
 // @Accept json
 // @Produce json
@@ -112,6 +111,10 @@ func (h *UserHandler) GetProfile(ctx *gin.Context) {
 // @Router /user [put]
 func (h *UserHandler) UpdateProfile(ctx *gin.Context) {
 	userId := GetUserIdFromCtx(ctx)
+	if userId == 0 {
+		v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized, nil)
+		return
+	}
 
 	var req v1.UpdateProfileRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {

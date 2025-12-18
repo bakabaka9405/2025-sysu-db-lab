@@ -5,10 +5,10 @@
 package mock_repository
 
 import (
+	model "backend/internal/model"
 	context "context"
 	reflect "reflect"
 
-	model "backend/internal/model"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -65,7 +65,7 @@ func (mr *MockUserRepositoryMockRecorder) GetByEmail(ctx, email interface{}) *go
 }
 
 // GetByID mocks base method.
-func (m *MockUserRepository) GetByID(ctx context.Context, id string) (*model.User, error) {
+func (m *MockUserRepository) GetByID(ctx context.Context, id int64) (*model.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByID", ctx, id)
 	ret0, _ := ret[0].(*model.User)
@@ -77,6 +77,36 @@ func (m *MockUserRepository) GetByID(ctx context.Context, id string) (*model.Use
 func (mr *MockUserRepositoryMockRecorder) GetByID(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockUserRepository)(nil).GetByID), ctx, id)
+}
+
+// GetByPhone mocks base method.
+func (m *MockUserRepository) GetByPhone(ctx context.Context, phone string) (*model.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByPhone", ctx, phone)
+	ret0, _ := ret[0].(*model.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByPhone indicates an expected call of GetByPhone.
+func (mr *MockUserRepositoryMockRecorder) GetByPhone(ctx, phone interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByPhone", reflect.TypeOf((*MockUserRepository)(nil).GetByPhone), ctx, phone)
+}
+
+// GetByUsername mocks base method.
+func (m *MockUserRepository) GetByUsername(ctx context.Context, username string) (*model.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByUsername", ctx, username)
+	ret0, _ := ret[0].(*model.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByUsername indicates an expected call of GetByUsername.
+func (mr *MockUserRepositoryMockRecorder) GetByUsername(ctx, username interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByUsername", reflect.TypeOf((*MockUserRepository)(nil).GetByUsername), ctx, username)
 }
 
 // Update mocks base method.

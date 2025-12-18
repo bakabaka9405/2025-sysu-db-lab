@@ -61,10 +61,15 @@ func TestUserService_Register(t *testing.T) {
 
 	ctx := context.Background()
 	req := &v1.RegisterRequest{
+		Username: "testuser",
 		Password: "password",
+		RealName: "Test User",
+		Phone:    "13800138000",
 		Email:    "test@example.com",
 	}
 
+	mockUserRepo.EXPECT().GetByUsername(ctx, req.Username).Return(nil, nil)
+	mockUserRepo.EXPECT().GetByPhone(ctx, req.Phone).Return(nil, nil)
 	mockUserRepo.EXPECT().GetByEmail(ctx, req.Email).Return(nil, nil)
 	mockTm.EXPECT().Transaction(ctx, gomock.Any()).Return(nil)
 
@@ -84,11 +89,14 @@ func TestUserService_Register_UsernameExists(t *testing.T) {
 
 	ctx := context.Background()
 	req := &v1.RegisterRequest{
+		Username: "testuser",
 		Password: "password",
+		RealName: "Test User",
+		Phone:    "13800138000",
 		Email:    "test@example.com",
 	}
 
-	mockUserRepo.EXPECT().GetByEmail(ctx, req.Email).Return(&model.User{}, nil)
+	mockUserRepo.EXPECT().GetByUsername(ctx, req.Username).Return(&model.User{}, nil)
 
 	err := userService.Register(ctx, req)
 
@@ -106,22 +114,25 @@ func TestUserService_Login(t *testing.T) {
 
 	ctx := context.Background()
 	req := &v1.LoginRequest{
-		Email:    "xxx@gmail.com",
-		Password: "password",
+		UsernameOrPhone: "testuser",
+		Password:        "password",
 	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		t.Error("failed to hash password")
 	}
 
-	mockUserRepo.EXPECT().GetByEmail(ctx, req.Email).Return(&model.User{
+	mockUserRepo.EXPECT().GetByUsername(ctx, req.UsernameOrPhone).Return(&model.User{
+		ID:       123,
+		Username: "testuser",
 		Password: string(hashedPassword),
 	}, nil)
 
-	token, err := userService.Login(ctx, req)
+	loginResp, err := userService.Login(ctx, req)
 
 	assert.NoError(t, err)
-	assert.NotEmpty(t, token)
+	assert.NotNil(t, loginResp)
+	assert.NotEmpty(t, loginResp.AccessToken)
 }
 
 func TestUserService_Login_UserNotFound(t *testing.T) {
@@ -135,11 +146,11 @@ func TestUserService_Login_UserNotFound(t *testing.T) {
 
 	ctx := context.Background()
 	req := &v1.LoginRequest{
-		Email:    "xxx@gmail.com",
-		Password: "password",
+		UsernameOrPhone: "testuser",
+		Password:        "password",
 	}
 
-	mockUserRepo.EXPECT().GetByEmail(ctx, req.Email).Return(nil, errors.New("user not found"))
+	mockUserRepo.EXPECT().GetByUsername(ctx, req.UsernameOrPhone).Return(nil, errors.New("user not found"))
 
 	_, err := userService.Login(ctx, req)
 
@@ -156,17 +167,18 @@ func TestUserService_GetProfile(t *testing.T) {
 	userService := service.NewUserService(srv, mockUserRepo)
 
 	ctx := context.Background()
-	userId := "123"
+	userId := int64(123)
 
 	mockUserRepo.EXPECT().GetByID(ctx, userId).Return(&model.User{
-		UserId: userId,
-		Email:  "test@example.com",
+		ID:       userId,
+		Username: "testuser",
+		Email:    "test@example.com",
 	}, nil)
 
 	user, err := userService.GetProfile(ctx, userId)
 
 	assert.NoError(t, err)
-	assert.Equal(t, userId, user.UserId)
+	assert.Equal(t, userId, user.ID)
 }
 
 func TestUserService_UpdateProfile(t *testing.T) {
@@ -179,15 +191,15 @@ func TestUserService_UpdateProfile(t *testing.T) {
 	userService := service.NewUserService(srv, mockUserRepo)
 
 	ctx := context.Background()
-	userId := "123"
+	userId := int64(123)
 	req := &v1.UpdateProfileRequest{
-		Nickname: "testuser",
+		RealName: "testuser",
 		Email:    "test@example.com",
 	}
 
 	mockUserRepo.EXPECT().GetByID(ctx, userId).Return(&model.User{
-		UserId: userId,
-		Email:  "old@example.com",
+		ID:    userId,
+		Email: "old@example.com",
 	}, nil)
 	mockUserRepo.EXPECT().Update(ctx, gomock.Any()).Return(nil)
 
@@ -206,9 +218,9 @@ func TestUserService_UpdateProfile_UserNotFound(t *testing.T) {
 	userService := service.NewUserService(srv, mockUserRepo)
 
 	ctx := context.Background()
-	userId := "123"
+	userId := int64(123)
 	req := &v1.UpdateProfileRequest{
-		Nickname: "testuser",
+		RealName: "testuser",
 		Email:    "test@example.com",
 	}
 

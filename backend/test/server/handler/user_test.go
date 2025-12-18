@@ -16,7 +16,10 @@ func TestUserHandler_Register(t *testing.T) {
 	defer ctrl.Finish()
 
 	params := v1.RegisterRequest{
+		Username: "testuser",
 		Password: "123456",
+		RealName: "Test User",
+		Phone:    "13800138000",
 		Email:    "xxx@gmail.com",
 	}
 
@@ -43,13 +46,18 @@ func TestUserHandler_Login(t *testing.T) {
 	defer ctrl.Finish()
 
 	params := v1.LoginRequest{
-		Email:    "xxx@gmail.com",
-		Password: "123456",
+		UsernameOrPhone: "testuser",
+		Password:        "123456",
 	}
 
-	tk := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiJ4eHgiLCJleHAiOjE3MzgyMjA1MTQsIm5iZiI6MTczMDQ0NDUxNCwiaWF0IjoxNzMwNDQ0NTE0fQ.3D4YupmPBCkv16ESnYyWSV5Mxcdu0twzEUqx0K-UiWo"
 	mockUserService := mock_service.NewMockUserService(ctrl)
-	mockUserService.EXPECT().Login(gomock.Any(), &params).Return(tk, nil)
+	mockUserService.EXPECT().Login(gomock.Any(), &params).Return(&v1.LoginResponseData{
+		AccessToken: "test-token",
+		User: v1.UserInfo{
+			ID:       123,
+			Username: "testuser",
+		},
+	}, nil)
 
 	userHandler := handler.NewUserHandler(hdl, mockUserService)
 	router.POST("/login", userHandler.Login)
@@ -63,18 +71,18 @@ func TestUserHandler_Login(t *testing.T) {
 		Object()
 	obj.Value("code").IsEqual(0)
 	obj.Value("message").IsEqual("ok")
-	obj.Value("data").Object().Value("accessToken").IsEqual(tk)
+	obj.Value("data").Object().Value("accessToken").IsEqual("test-token")
 }
 
 func TestUserHandler_GetProfile(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	nickname := "xxxxx"
+	username := "testuser"
 	mockUserService := mock_service.NewMockUserService(ctrl)
-	mockUserService.EXPECT().GetProfile(gomock.Any(), userId).Return(&v1.GetProfileResponseData{
-		UserId:   userId,
-		Nickname: nickname,
+	mockUserService.EXPECT().GetProfile(gomock.Any(), int64(123)).Return(&v1.GetProfileResponseData{
+		ID:       123,
+		Username: username,
 	}, nil)
 
 	userHandler := handler.NewUserHandler(hdl, mockUserService)
@@ -90,8 +98,8 @@ func TestUserHandler_GetProfile(t *testing.T) {
 	obj.Value("code").IsEqual(0)
 	obj.Value("message").IsEqual("ok")
 	objData := obj.Value("data").Object()
-	objData.Value("userId").IsEqual(userId)
-	objData.Value("nickname").IsEqual(nickname)
+	objData.Value("id").IsEqual(float64(123))
+	objData.Value("username").IsEqual(username)
 }
 
 func TestUserHandler_UpdateProfile(t *testing.T) {
@@ -99,12 +107,12 @@ func TestUserHandler_UpdateProfile(t *testing.T) {
 	defer ctrl.Finish()
 
 	params := v1.UpdateProfileRequest{
-		Nickname: "alan",
+		RealName: "Alan Zhang",
 		Email:    "alan@gmail.com",
 	}
 
 	mockUserService := mock_service.NewMockUserService(ctrl)
-	mockUserService.EXPECT().UpdateProfile(gomock.Any(), userId, &params).Return(nil)
+	mockUserService.EXPECT().UpdateProfile(gomock.Any(), int64(123), &params).Return(nil)
 
 	userHandler := handler.NewUserHandler(hdl, mockUserService)
 	router.Use(middleware.StrictAuth(jwt, logger))

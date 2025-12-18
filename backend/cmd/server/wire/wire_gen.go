@@ -26,7 +26,6 @@ import (
 
 func NewWire(viperViper *viper.Viper, logger *log.Logger) (*app.App, func(), error) {
 	jwtJWT := jwt.NewJwt(viperViper)
-	handlerHandler := handler.NewHandler(logger)
 	db := repository.NewDB(viperViper, logger)
 	repositoryRepository := repository.NewRepository(logger, db)
 	transaction := repository.NewTransaction(repositoryRepository)
@@ -34,12 +33,22 @@ func NewWire(viperViper *viper.Viper, logger *log.Logger) (*app.App, func(), err
 	serviceService := service.NewService(transaction, logger, sidSid, jwtJWT)
 	userRepository := repository.NewUserRepository(repositoryRepository)
 	userService := service.NewUserService(serviceService, userRepository)
+	handlerHandler := handler.NewHandler(logger, userService)
 	userHandler := handler.NewUserHandler(handlerHandler, userService)
+	parcelRepository := repository.NewParcelRepository(repositoryRepository)
+	shelfRepository := repository.NewShelfRepository(repositoryRepository)
+	parcelService := service.NewParcelService(parcelRepository, shelfRepository, transaction)
+	parcelHandler := handler.NewParcelHandler(handlerHandler, parcelService)
+	shipmentRepository := repository.NewShipmentRepository(repositoryRepository)
+	shipmentService := service.NewShipmentService(shipmentRepository)
+	shipmentHandler := handler.NewShipmentHandler(handlerHandler, shipmentService)
 	routerDeps := router.RouterDeps{
-		Logger:      logger,
-		Config:      viperViper,
-		JWT:         jwtJWT,
-		UserHandler: userHandler,
+		Logger:          logger,
+		Config:          viperViper,
+		JWT:             jwtJWT,
+		UserHandler:     userHandler,
+		ParcelHandler:   parcelHandler,
+		ShipmentHandler: shipmentHandler,
 	}
 	httpServer := server.NewHTTPServer(routerDeps)
 	jobJob := job.NewJob(transaction, logger, sidSid)
@@ -52,11 +61,11 @@ func NewWire(viperViper *viper.Viper, logger *log.Logger) (*app.App, func(), err
 
 // wire.go:
 
-var repositorySet = wire.NewSet(repository.NewDB, repository.NewRepository, repository.NewTransaction, repository.NewUserRepository)
+var repositorySet = wire.NewSet(repository.NewDB, repository.NewRepository, repository.NewTransaction, repository.NewUserRepository, repository.NewParcelRepository, repository.NewShelfRepository, repository.NewShipmentRepository)
 
-var serviceSet = wire.NewSet(service.NewService, service.NewUserService)
+var serviceSet = wire.NewSet(service.NewService, service.NewUserService, service.NewParcelService, service.NewShipmentService)
 
-var handlerSet = wire.NewSet(handler.NewHandler, handler.NewUserHandler)
+var handlerSet = wire.NewSet(handler.NewHandler, handler.NewUserHandler, handler.NewParcelHandler, handler.NewShipmentHandler)
 
 var jobSet = wire.NewSet(job.NewJob, job.NewUserJob)
 

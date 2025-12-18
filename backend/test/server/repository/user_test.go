@@ -43,18 +43,20 @@ func TestUserRepository_Create(t *testing.T) {
 
 	ctx := context.Background()
 	user := &model.User{
-		Id:        1,
-		UserId:    "123",
-		Nickname:  "Test",
+		ID:        1,
+		Username:  "testuser",
+		RealName:  "Test User",
 		Password:  "password",
+		Phone:     "13800138000",
 		Email:     "test@example.com",
+		Role:      "user", // Add role field to match GORM default
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
 
 	mock.ExpectBegin()
 	mock.ExpectExec("INSERT INTO `users`").
-		WithArgs(user.UserId, user.Nickname, user.Password, user.Email, user.CreatedAt, user.UpdatedAt, user.DeletedAt, user.Id).
+		WithArgs(user.Username, user.Password, user.RealName, user.Phone, user.IDCard, user.Email, user.Role, user.CreatedAt, user.UpdatedAt, user.DeletedAt, user.ID).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
 
@@ -69,11 +71,13 @@ func TestUserRepository_Update(t *testing.T) {
 
 	ctx := context.Background()
 	user := &model.User{
-		Id:        1,
-		UserId:    "123",
-		Nickname:  "Test",
+		ID:        1,
+		Username:  "testuser",
+		RealName:  "Test User",
 		Password:  "password",
+		Phone:     "13800138000",
 		Email:     "test@example.com",
+		Role:      "user", // Add role field
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -92,28 +96,28 @@ func TestUserRepository_GetById(t *testing.T) {
 	userRepo, mock := setupRepository(t)
 
 	ctx := context.Background()
-	userId := "123"
+	userId := int64(123)
 
-	rows := sqlmock.NewRows([]string{"id", "user_id", "username", "nickname", "password", "email", "created_at", "updated_at"}).
-		AddRow(1, "123", "test", "Test", "password", "test@example.com", time.Now(), time.Now())
+	rows := sqlmock.NewRows([]string{"id", "username", "real_name", "password", "phone", "email", "role", "created_at", "updated_at"}).
+		AddRow(123, "testuser", "Test User", "password", "13800138000", "test@example.com", "user", time.Now(), time.Now())
 	mock.ExpectQuery("SELECT \\* FROM `users`").WillReturnRows(rows)
 
 	user, err := userRepo.GetByID(ctx, userId)
 	assert.NoError(t, err)
 	assert.NotNil(t, user)
-	assert.Equal(t, "123", user.UserId)
+	assert.Equal(t, int64(123), user.ID)
 
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
-func TestUserRepository_GetByUsername(t *testing.T) {
+func TestUserRepository_GetByEmail(t *testing.T) {
 	userRepo, mock := setupRepository(t)
 
 	ctx := context.Background()
 	email := "test@example.com"
 
-	rows := sqlmock.NewRows([]string{"id", "user_id", "username", "nickname", "password", "email", "created_at", "updated_at"}).
-		AddRow(1, "123", "test", "Test", "password", "test@example.com", time.Now(), time.Now())
+	rows := sqlmock.NewRows([]string{"id", "username", "real_name", "password", "phone", "email", "role", "created_at", "updated_at"}).
+		AddRow(123, "testuser", "Test User", "password", "13800138000", "test@example.com", "user", time.Now(), time.Now())
 	mock.ExpectQuery("SELECT \\* FROM `users`").WillReturnRows(rows)
 
 	user, err := userRepo.GetByEmail(ctx, email)

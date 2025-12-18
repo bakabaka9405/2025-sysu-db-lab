@@ -20,7 +20,7 @@ import (
 )
 
 var (
-	userId = "xxx"
+	userId = int64(123)
 )
 var logger *log.Logger
 var hdl *handler.Handler
@@ -42,7 +42,7 @@ func TestMain(m *testing.M) {
 	conf.Set("log.log_file_name", logPath)
 
 	logger = log.NewLog(conf)
-	hdl = handler.NewHandler(logger)
+	hdl = handler.NewHandler(logger, nil) // nil is acceptable for base handler in tests
 
 	jwt = jwt2.NewJwt(conf)
 	gin.SetMode(gin.TestMode)
@@ -68,7 +68,7 @@ func performRequest(r http.Handler, method, path string, body *bytes.Buffer) *ht
 }
 
 func genToken(t *testing.T) string {
-	token, err := jwt.GenToken(userId, time.Now().Add(time.Hour*24*90))
+	token, err := jwt.GenToken(fmt.Sprintf("%d", userId), time.Now().Add(time.Hour*24*90))
 	if err != nil {
 		t.Error(err)
 		return token

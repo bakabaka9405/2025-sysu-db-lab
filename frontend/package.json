@@ -9,7 +9,12 @@
     "clean": "farm clean"
   },
   "dependencies": {
-    "vue": "^3.4.0"
+    "@vicons/ionicons5": "^0.13.0",
+    "axios": "^1.13.2",
+    "naive-ui": "^2.43.2",
+    "pinia": "^3.0.4",
+    "vue": "^3.4.0",
+    "vue-router": "^4.6.3"
   },
   "devDependencies": {
     "@farmfe/cli": "^1.0.4",

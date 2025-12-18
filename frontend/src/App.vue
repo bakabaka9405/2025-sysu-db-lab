@@ -1,32 +1,36 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import { NMessageProvider, NDialogProvider, NNotificationProvider } from 'naive-ui'
 </script>
 
 <template>
-  <div>
-    <a href="https://farmfe.org/" target="_blank">
-      <img src="./assets/logo.png" class="logo" alt="Farm logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Farm + Vue" />
+  <NMessageProvider>
+    <NDialogProvider>
+      <NNotificationProvider>
+        <router-view />
+      </NNotificationProvider>
+    </NDialogProvider>
+  </NMessageProvider>
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+<style>
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
-.logo:hover {
-  filter: drop-shadow(0 0 2em #9F1A8Faa);
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
 }
 
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+#app {
+  width: 100%;
+  height: 100%;
 }
 </style>
