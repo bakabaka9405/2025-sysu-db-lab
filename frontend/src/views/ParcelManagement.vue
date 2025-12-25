@@ -33,7 +33,7 @@ const parcels = ref<Parcel[]>([])
 const total = ref(0)
 const page = ref(1)
 const pageSize = ref(20)
-const statusFilter = ref<string | null>(null)
+const statusFilter = ref<string>('')
 
 // 入库弹窗
 const showReceiveModal = ref(false)
@@ -59,7 +59,7 @@ const pickupForm = ref<PickupParcelRequest>({
 
 // 状态选项
 const statusOptions = [
-  { label: '全部', value: null },
+  { label: '全部', value: '' },
   { label: '已接收', value: 'received' },
   { label: '已上架', value: 'shelved' },
   { label: '待取件', value: 'ready_for_pickup' },
@@ -100,7 +100,7 @@ const columns: DataTableColumns<Parcel> = [
     key: 'pickup_code',
     width: 100,
     render: (row) => {
-      return h('strong', { style: 'color: #667eea; font-size: 14px;' }, row.pickup_code)
+      return h('strong', { style: 'color: #18a058; font-size: 14px;' }, row.pickup_code)
     }
   },
   {
@@ -296,38 +296,21 @@ onMounted(() => {
 
       <!-- 筛选工具栏 -->
       <NSpace style="margin-bottom: 16px;">
-        <NSelect
-          v-model:value="statusFilter"
-          :options="statusOptions"
-          placeholder="状态筛选"
-          style="width: 150px;"
-          @update:value="handleStatusChange"
-        />
+        <NSelect v-model:value="statusFilter" :options="statusOptions" placeholder="状态筛选" style="width: 150px;"
+          @update:value="handleStatusChange" />
       </NSpace>
 
       <!-- 数据表格 -->
-      <NDataTable
-        :columns="columns"
-        :data="parcels"
-        :loading="loading"
-        :pagination="{
-          page: page,
-          pageSize: pageSize,
-          itemCount: total,
-          onUpdatePage: handlePageChange
-        }"
-        :scroll-x="1200"
-      />
+      <NDataTable :columns="columns" :data="parcels" :loading="loading" :pagination="{
+        page: page,
+        pageSize: pageSize,
+        itemCount: total,
+        onUpdatePage: handlePageChange
+      }" :scroll-x="1200" />
     </NCard>
 
     <!-- 入库弹窗 -->
-    <NModal
-      v-model:show="showReceiveModal"
-      preset="card"
-      title="包裹入库"
-      style="width: 600px;"
-      :mask-closable="false"
-    >
+    <NModal v-model:show="showReceiveModal" preset="card" title="包裹入库" style="width: 600px;" :mask-closable="false">
       <NForm :model="receiveForm" label-placement="left" label-width="110">
         <NFormItem label="快递单号" required>
           <NInput v-model:value="receiveForm.tracking_number" placeholder="请输入快递单号" />
@@ -346,39 +329,20 @@ onMounted(() => {
         </NFormItem>
 
         <NFormItem label="快递公司" required>
-          <NSelect
-            v-model:value="receiveForm.courier_company"
-            :options="courierOptions"
-            placeholder="请选择快递公司"
-          />
+          <NSelect v-model:value="receiveForm.courier_company" :options="courierOptions" placeholder="请选择快递公司" />
         </NFormItem>
 
         <NFormItem label="包裹尺寸" required>
-          <NSelect
-            v-model:value="receiveForm.size"
-            :options="sizeOptions"
-            placeholder="请选择包裹尺寸"
-          />
+          <NSelect v-model:value="receiveForm.size" :options="sizeOptions" placeholder="请选择包裹尺寸" />
         </NFormItem>
 
         <NFormItem label="重量 (kg)" required>
-          <NInputNumber
-            v-model:value="receiveForm.weight"
-            :min="0.1"
-            :max="50"
-            :step="0.1"
-            placeholder="请输入重量"
-            style="width: 100%;"
-          />
+          <NInputNumber v-model:value="receiveForm.weight" :min="0.1" :max="50" :step="0.1" placeholder="请输入重量"
+            style="width: 100%;" />
         </NFormItem>
 
         <NFormItem label="备注">
-          <NInput
-            v-model:value="receiveForm.notes"
-            type="textarea"
-            placeholder="选填"
-            :rows="3"
-          />
+          <NInput v-model:value="receiveForm.notes" type="textarea" placeholder="选填" :rows="3" />
         </NFormItem>
       </NForm>
 
@@ -393,28 +357,14 @@ onMounted(() => {
     </NModal>
 
     <!-- 取件弹窗 -->
-    <NModal
-      v-model:show="showPickupModal"
-      preset="card"
-      title="包裹取件"
-      style="width: 500px;"
-      :mask-closable="false"
-    >
+    <NModal v-model:show="showPickupModal" preset="card" title="包裹取件" style="width: 500px;" :mask-closable="false">
       <NForm :model="pickupForm" label-placement="left" label-width="80">
         <NFormItem label="取件码" required>
-          <NInput
-            v-model:value="pickupForm.pickup_code"
-            placeholder="请输入取件码"
-            size="large"
-          />
+          <NInput v-model:value="pickupForm.pickup_code" placeholder="请输入取件码" size="large" />
         </NFormItem>
 
         <NFormItem label="手机号" required>
-          <NInput
-            v-model:value="pickupForm.recipient_phone"
-            placeholder="请输入收件人手机号进行验证"
-            size="large"
-          />
+          <NInput v-model:value="pickupForm.recipient_phone" placeholder="请输入收件人手机号进行验证" size="large" />
         </NFormItem>
       </NForm>
 

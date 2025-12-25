@@ -54,7 +54,6 @@ const userOptions = [
 const handleUserMenuSelect = (key: string) => {
   if (key === 'logout') {
     userStore.logout()
-    message.success('已退出登录')
     router.push('/')
   } else if (key === 'profile') {
     router.push('/profile')
@@ -229,7 +228,7 @@ const services = [
 .logo {
   font-size: 20px;
   font-weight: bold;
-  color: #667eea;
+  color: #18a058;
   letter-spacing: 1px;
 }
 
@@ -239,7 +238,7 @@ const services = [
   margin: 48px auto;
   text-align: center;
   padding: 64px 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #36ad6a 0%, #18a058 100%);
   border-radius: 16px;
   color: white;
 }
@@ -302,7 +301,7 @@ const services = [
 .feature-icon,
 .service-icon {
   margin-bottom: 16px;
-  color: #667eea;
+  color: #18a058;
   display: flex;
   justify-content: center;
 }
@@ -331,7 +330,7 @@ const services = [
   margin: 64px auto;
   text-align: center;
   padding: 64px 48px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #36ad6a 0%, #18a058 100%);
   border-radius: 16px;
   color: white;
 }

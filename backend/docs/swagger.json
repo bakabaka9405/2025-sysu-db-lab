@@ -17,8 +17,82 @@
     },
     "host": "localhost:8000",
     "paths": {
+        "/courier-companies": {
+            "get": {
+                "description": "获取支持的快递公司列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "寄件管理"
+                ],
+                "summary": "获取快递公司列表",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/statistics": {
+            "get": {
+                "description": "获取包裹和货架的统计信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "统计"
+                ],
+                "summary": "获取仪表盘统计数据",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.DashboardStatistics"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
+                "description": "支持用户名或手机号登录",
                 "consumes": [
                     "application/json"
                 ],
@@ -50,9 +124,555 @@
                 }
             }
         },
+        "/my-parcels": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "用户获取自己的包裹列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "包裹管理"
+                ],
+                "summary": "获取我的包裹",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "包裹状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "每页数量",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.ParcelListData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/my-shipments": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "用户获取自己的寄件单列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "寄件管理"
+                ],
+                "summary": "获取我的寄件单列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "寄件单状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "每页数量",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.ShipmentListData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/overdue": {
+            "get": {
+                "description": "获取滞留件列表，支持按状态筛选",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "滞留件管理"
+                ],
+                "summary": "获取滞留件列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "每页数量",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.OverdueListData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/overdue/batch-return": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "批量将滞留件退回",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "滞留件管理"
+                ],
+                "summary": "批量退回滞留件",
+                "parameters": [
+                    {
+                        "description": "退回请求",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.BatchReturnRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.BatchResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/overdue/check": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "手动触发检查滞留件（通常由定时任务调用）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "滞留件管理"
+                ],
+                "summary": "检查并标记滞留件",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/overdue/{id}/remind": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "对指定滞留件发送提醒通知",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "滞留件管理"
+                ],
+                "summary": "发送滞留提醒",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "滞留记录ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/parcels": {
+            "get": {
+                "description": "工作人员获取包裹列表，支持筛选",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "包裹管理"
+                ],
+                "summary": "获取包裹列表（管理端）",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "包裹状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "快递公司",
+                        "name": "courier_company",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "收件人手机号",
+                        "name": "recipient_phone",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "每页数量",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.ParcelListData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/parcels/by-pickup-code/{code}": {
+            "get": {
+                "description": "根据取件码查询包裹信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "包裹管理"
+                ],
+                "summary": "通过取件码查询包裹",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "取件码",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.ParcelInfo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/parcels/by-tracking/{number}": {
+            "get": {
+                "description": "根据快递单号查询包裹信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "包裹管理"
+                ],
+                "summary": "通过快递单号查询包裹",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "快递单号",
+                        "name": "number",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.ParcelInfo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/parcels/pickup": {
+            "post": {
+                "description": "用户凭取件码和手机号取件",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "包裹管理"
+                ],
+                "summary": "包裹取件",
+                "parameters": [
+                    {
+                        "description": "取件信息",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.PickupParcelRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.ParcelInfo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/parcels/receive": {
+            "post": {
+                "description": "工作人员将包裹录入系统并上架",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "包裹管理"
+                ],
+                "summary": "包裹入库",
+                "parameters": [
+                    {
+                        "description": "入库信息",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.ReceiveParcelRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.ParcelInfo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/register": {
             "post": {
-                "description": "目前只支持邮箱登录",
+                "description": "注册新用户，需要提供用户名、密码、真实姓名和手机号",
                 "consumes": [
                     "application/json"
                 ],
@@ -84,6 +704,440 @@
                 }
             }
         },
+        "/shelves": {
+            "get": {
+                "description": "获取货架列表，支持筛选",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "货架管理"
+                ],
+                "summary": "获取货架列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "区域",
+                        "name": "area",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "类型",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "每页数量",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.ShelfListData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "管理员创建新货架",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "货架管理"
+                ],
+                "summary": "创建货架",
+                "parameters": [
+                    {
+                        "description": "货架信息",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.CreateShelfRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.ShelfInfo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/shelves/statistics": {
+            "get": {
+                "description": "获取货架统计数据",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "货架管理"
+                ],
+                "summary": "获取货架统计",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.ShelfStatistics"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/shelves/{id}": {
+            "get": {
+                "description": "获取单个货架详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "货架管理"
+                ],
+                "summary": "获取货架详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "货架ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.ShelfInfo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "管理员更新货架信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "货架管理"
+                ],
+                "summary": "更新货架",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "货架ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "货架信息",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.UpdateShelfRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.ShelfInfo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "管理员删除货架",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "货架管理"
+                ],
+                "summary": "删除货架",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "货架ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/shipments": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "用户创建寄件单",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "寄件管理"
+                ],
+                "summary": "创建寄件单",
+                "parameters": [
+                    {
+                        "description": "寄件信息",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.CreateShipmentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.ShipmentInfo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/shipments/calculate-freight": {
+            "post": {
+                "description": "计算寄件运费",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "寄件管理"
+                ],
+                "summary": "运费试算",
+                "parameters": [
+                    {
+                        "description": "运费计算参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.CalculateFreightRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.CalculateFreightData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/shipments/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "获取寄件单详细信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "寄件管理"
+                ],
+                "summary": "获取寄件单详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "寄件单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.ShipmentInfo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/user": {
             "get": {
                 "security": [
@@ -91,6 +1145,7 @@
                         "Bearer": []
                     }
                 ],
+                "description": "获取当前登录用户的详细信息",
                 "consumes": [
                     "application/json"
                 ],
@@ -116,6 +1171,7 @@
                         "Bearer": []
                     }
                 ],
+                "description": "更新当前用户的个人信息",
                 "consumes": [
                     "application/json"
                 ],
@@ -149,6 +1205,239 @@
         }
     },
     "definitions": {
+        "v1.BatchResult": {
+            "type": "object",
+            "properties": {
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "failed": {
+                    "type": "integer"
+                },
+                "success": {
+                    "type": "integer"
+                }
+            }
+        },
+        "v1.BatchReturnRequest": {
+            "type": "object",
+            "required": [
+                "ids"
+            ],
+            "properties": {
+                "ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "v1.CalculateFreightData": {
+            "type": "object",
+            "properties": {
+                "calculation_details": {
+                    "type": "object",
+                    "properties": {
+                        "base_freight": {
+                            "type": "number"
+                        },
+                        "volume_freight": {
+                            "type": "number"
+                        },
+                        "weight_freight": {
+                            "type": "number"
+                        }
+                    }
+                },
+                "freight": {
+                    "type": "number"
+                }
+            }
+        },
+        "v1.CalculateFreightRequest": {
+            "type": "object",
+            "required": [
+                "courier_company",
+                "volume",
+                "weight"
+            ],
+            "properties": {
+                "courier_company": {
+                    "type": "string",
+                    "example": "顺丰速运"
+                },
+                "volume": {
+                    "type": "number",
+                    "example": 0.05
+                },
+                "weight": {
+                    "type": "number",
+                    "example": 2.5
+                }
+            }
+        },
+        "v1.CreateShelfRequest": {
+            "type": "object",
+            "required": [
+                "area",
+                "capacity",
+                "column",
+                "floor",
+                "shelf_code",
+                "type"
+            ],
+            "properties": {
+                "area": {
+                    "type": "string",
+                    "example": "A"
+                },
+                "capacity": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 20
+                },
+                "column": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 1
+                },
+                "floor": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 1
+                },
+                "shelf_code": {
+                    "type": "string",
+                    "example": "A-1-1"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "small",
+                        "medium",
+                        "large"
+                    ],
+                    "example": "small"
+                }
+            }
+        },
+        "v1.CreateShipmentRequest": {
+            "type": "object",
+            "required": [
+                "courier_company",
+                "recipient_address",
+                "recipient_name",
+                "recipient_phone",
+                "volume",
+                "weight"
+            ],
+            "properties": {
+                "courier_company": {
+                    "type": "string",
+                    "example": "顺丰速运"
+                },
+                "recipient_address": {
+                    "type": "string",
+                    "example": "广东省广州市天河区XX路XX号"
+                },
+                "recipient_name": {
+                    "type": "string",
+                    "example": "李四"
+                },
+                "recipient_phone": {
+                    "type": "string",
+                    "example": "13900139000"
+                },
+                "volume": {
+                    "type": "number",
+                    "example": 0.05
+                },
+                "weight": {
+                    "type": "number",
+                    "example": 2.5
+                }
+            }
+        },
+        "v1.DashboardStatistics": {
+            "type": "object",
+            "properties": {
+                "parcels": {
+                    "type": "object",
+                    "properties": {
+                        "overdue": {
+                            "type": "integer"
+                        },
+                        "picked_up": {
+                            "type": "integer"
+                        },
+                        "ready_for_pickup": {
+                            "type": "integer"
+                        },
+                        "received": {
+                            "type": "integer"
+                        },
+                        "returned": {
+                            "type": "integer"
+                        },
+                        "shelved": {
+                            "type": "integer"
+                        },
+                        "total": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "recent_trends": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "date": {
+                                "type": "string"
+                            },
+                            "picked_up": {
+                                "type": "integer"
+                            },
+                            "received": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                },
+                "shelves": {
+                    "type": "object",
+                    "properties": {
+                        "total_capacity": {
+                            "type": "integer"
+                        },
+                        "total_used": {
+                            "type": "integer"
+                        },
+                        "utilization_rate": {
+                            "type": "number"
+                        }
+                    }
+                },
+                "today": {
+                    "type": "object",
+                    "properties": {
+                        "overdue_count": {
+                            "type": "integer"
+                        },
+                        "picked_up_count": {
+                            "type": "integer"
+                        },
+                        "received_count": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
         "v1.GetProfileResponse": {
             "type": "object",
             "properties": {
@@ -166,11 +1455,25 @@
         "v1.GetProfileResponseData": {
             "type": "object",
             "properties": {
-                "nickname": {
-                    "type": "string",
-                    "example": "alan"
+                "email": {
+                    "type": "string"
                 },
-                "userId": {
+                "id": {
+                    "type": "integer"
+                },
+                "idCard": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "realName": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }
@@ -178,17 +1481,17 @@
         "v1.LoginRequest": {
             "type": "object",
             "required": [
-                "email",
-                "password"
+                "password",
+                "usernameOrPhone"
             ],
             "properties": {
-                "email": {
-                    "type": "string",
-                    "example": "1234@gmail.com"
-                },
                 "password": {
                     "type": "string",
                     "example": "123456"
+                },
+                "usernameOrPhone": {
+                    "type": "string",
+                    "example": "zhangsan"
                 }
             }
         },
@@ -211,23 +1514,259 @@
             "properties": {
                 "accessToken": {
                     "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/v1.UserInfo"
+                }
+            }
+        },
+        "v1.OverdueInfo": {
+            "type": "object",
+            "properties": {
+                "courier_company": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "last_reminder_at": {
+                    "type": "string"
+                },
+                "overdue_days": {
+                    "type": "integer"
+                },
+                "overdue_fee": {
+                    "type": "number"
+                },
+                "overdue_start_at": {
+                    "type": "string"
+                },
+                "parcel_id": {
+                    "type": "integer"
+                },
+                "pickup_code": {
+                    "type": "string"
+                },
+                "recipient_name": {
+                    "type": "string"
+                },
+                "recipient_phone": {
+                    "type": "string"
+                },
+                "reminder_count": {
+                    "type": "integer"
+                },
+                "shelf_code": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "tracking_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.OverdueListData": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1.OverdueInfo"
+                    }
+                },
+                "pagination": {
+                    "$ref": "#/definitions/v1.Pagination"
+                }
+            }
+        },
+        "v1.Pagination": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "page_size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
+                }
+            }
+        },
+        "v1.ParcelInfo": {
+            "type": "object",
+            "properties": {
+                "courier_company": {
+                    "type": "string"
+                },
+                "expected_overdue_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "picked_up_at": {
+                    "type": "string"
+                },
+                "pickup_code": {
+                    "type": "string"
+                },
+                "received_at": {
+                    "type": "string"
+                },
+                "recipient_name": {
+                    "type": "string"
+                },
+                "recipient_phone": {
+                    "type": "string"
+                },
+                "shelf": {
+                    "$ref": "#/definitions/v1.ShelfInfo"
+                },
+                "shelved_at": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "tracking_number": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "number"
+                }
+            }
+        },
+        "v1.ParcelListData": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1.ParcelInfo"
+                    }
+                },
+                "pagination": {
+                    "$ref": "#/definitions/v1.Pagination"
+                }
+            }
+        },
+        "v1.PickupParcelRequest": {
+            "type": "object",
+            "required": [
+                "pickup_code",
+                "recipient_phone"
+            ],
+            "properties": {
+                "pickup_code": {
+                    "type": "string",
+                    "example": "A12345"
+                },
+                "recipient_phone": {
+                    "type": "string",
+                    "example": "13800138000"
+                }
+            }
+        },
+        "v1.ReceiveParcelRequest": {
+            "type": "object",
+            "required": [
+                "courier_company",
+                "recipient_name",
+                "recipient_phone",
+                "size",
+                "tracking_number",
+                "weight"
+            ],
+            "properties": {
+                "courier_company": {
+                    "type": "string",
+                    "example": "顺丰速运"
+                },
+                "notes": {
+                    "type": "string",
+                    "example": "易碎物品"
+                },
+                "recipient_id_card": {
+                    "type": "string",
+                    "example": "440101199001011234"
+                },
+                "recipient_name": {
+                    "type": "string",
+                    "example": "张三"
+                },
+                "recipient_phone": {
+                    "type": "string",
+                    "example": "13800138000"
+                },
+                "size": {
+                    "type": "string",
+                    "enum": [
+                        "small",
+                        "medium",
+                        "large"
+                    ],
+                    "example": "small"
+                },
+                "tracking_number": {
+                    "type": "string",
+                    "example": "SF1234567890"
+                },
+                "weight": {
+                    "type": "number",
+                    "example": 1.5
                 }
             }
         },
         "v1.RegisterRequest": {
             "type": "object",
             "required": [
-                "email",
-                "password"
+                "password",
+                "phone",
+                "realName",
+                "username"
             ],
             "properties": {
                 "email": {
                     "type": "string",
-                    "example": "1234@gmail.com"
+                    "example": "zhangsan@example.com"
+                },
+                "idCard": {
+                    "type": "string",
+                    "example": "440101199001011234"
                 },
                 "password": {
                     "type": "string",
+                    "minLength": 6,
                     "example": "123456"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "13800138000"
+                },
+                "realName": {
+                    "type": "string",
+                    "example": "张三"
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 3,
+                    "example": "zhangsan"
                 }
             }
         },
@@ -243,19 +1782,218 @@
                 }
             }
         },
+        "v1.ShelfInfo": {
+            "type": "object",
+            "properties": {
+                "area": {
+                    "type": "string"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "column": {
+                    "type": "integer"
+                },
+                "current_count": {
+                    "type": "integer"
+                },
+                "floor": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "shelf_code": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.ShelfListData": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1.ShelfInfo"
+                    }
+                },
+                "pagination": {
+                    "$ref": "#/definitions/v1.Pagination"
+                }
+            }
+        },
+        "v1.ShelfStatistics": {
+            "type": "object",
+            "properties": {
+                "active_shelves": {
+                    "type": "integer"
+                },
+                "by_type": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "capacity": {
+                                "type": "integer"
+                            },
+                            "count": {
+                                "type": "integer"
+                            },
+                            "type": {
+                                "type": "string"
+                            },
+                            "used": {
+                                "type": "integer"
+                            },
+                            "utilization_rate": {
+                                "type": "number"
+                            }
+                        }
+                    }
+                },
+                "total_capacity": {
+                    "type": "integer"
+                },
+                "total_shelves": {
+                    "type": "integer"
+                },
+                "total_used": {
+                    "type": "integer"
+                },
+                "utilization_rate": {
+                    "type": "number"
+                }
+            }
+        },
+        "v1.ShipmentInfo": {
+            "type": "object",
+            "properties": {
+                "courier_company": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "freight": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "recipient_address": {
+                    "type": "string"
+                },
+                "recipient_name": {
+                    "type": "string"
+                },
+                "recipient_phone": {
+                    "type": "string"
+                },
+                "sender_name": {
+                    "type": "string"
+                },
+                "sender_phone": {
+                    "type": "string"
+                },
+                "shipment_number": {
+                    "type": "string"
+                },
+                "shipped_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "volume": {
+                    "type": "number"
+                },
+                "weight": {
+                    "type": "number"
+                }
+            }
+        },
+        "v1.ShipmentListData": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1.ShipmentInfo"
+                    }
+                },
+                "pagination": {
+                    "$ref": "#/definitions/v1.Pagination"
+                }
+            }
+        },
         "v1.UpdateProfileRequest": {
             "type": "object",
-            "required": [
-                "email"
-            ],
             "properties": {
                 "email": {
                     "type": "string",
-                    "example": "1234@gmail.com"
+                    "example": "zhangsan@example.com"
                 },
-                "nickname": {
+                "realName": {
                     "type": "string",
-                    "example": "alan"
+                    "example": "张三"
+                }
+            }
+        },
+        "v1.UpdateShelfRequest": {
+            "type": "object",
+            "properties": {
+                "area": {
+                    "type": "string",
+                    "example": "A"
+                },
+                "capacity": {
+                    "type": "integer",
+                    "example": 20
+                },
+                "column": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "floor": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "status": {
+                    "type": "string",
+                    "example": "active"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "small"
+                }
+            }
+        },
+        "v1.UserInfo": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "realName": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         }

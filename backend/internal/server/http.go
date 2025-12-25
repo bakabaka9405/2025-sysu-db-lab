@@ -50,6 +50,8 @@ func NewHTTPServer(
 	router.InitUserRouter(deps, v1)
 	router.InitParcelRouter(deps, v1)
 	router.InitShipmentRouter(deps, v1)
+	router.InitShelfRouter(deps, v1)
+	router.InitOverdueRouter(deps, v1)
 
 	return s
 }

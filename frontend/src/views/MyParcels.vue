@@ -27,7 +27,7 @@ const searchKeyword = ref('')
 
 // 包裹状态选项
 const statusOptions = [
-  { label: '全部', value: null },
+  { label: '全部', value: '' },
   { label: '待取件', value: 'ready_for_pickup' },
   { label: '已取件', value: 'picked_up' },
   { label: '滞留', value: 'overdue' }
@@ -50,7 +50,7 @@ const columns: DataTableColumns<Parcel> = [
     key: 'pickup_code',
     width: 100,
     render: (row) => {
-      return h('strong', { style: 'color: #667eea; font-size: 16px;' }, row.pickup_code)
+      return h('strong', { style: 'color: #18a058; font-size: 16px;' }, row.pickup_code)
     }
   },
   {
@@ -136,28 +136,17 @@ onMounted(() => {
     <NCard title="我的包裹">
       <!-- 筛选工具栏 -->
       <NSpace style="margin-bottom: 16px;">
-        <NSelect
-          v-model:value="statusFilter"
-          :options="statusOptions"
-          placeholder="状态筛选"
-          style="width: 150px;"
-          @update:value="handleStatusChange"
-        />
+        <NSelect v-model:value="statusFilter" :options="statusOptions" placeholder="状态筛选" style="width: 150px;"
+          @update:value="handleStatusChange" />
       </NSpace>
 
       <!-- 数据表格 -->
-      <NDataTable
-        :columns="columns"
-        :data="parcels"
-        :loading="loading"
-        :pagination="{
-          page: page,
-          pageSize: pageSize,
-          itemCount: total,
-          onUpdatePage: handlePageChange
-        }"
-        :scroll-x="1000"
-      />
+      <NDataTable :columns="columns" :data="parcels" :loading="loading" :pagination="{
+        page: page,
+        pageSize: pageSize,
+        itemCount: total,
+        onUpdatePage: handlePageChange
+      }" :scroll-x="1000" />
     </NCard>
   </div>
 </template>

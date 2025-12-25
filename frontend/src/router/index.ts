@@ -8,6 +8,8 @@ import Search from '../views/Search.vue';
 import MyParcels from '../views/MyParcels.vue';
 import MyShipments from '../views/MyShipments.vue';
 import ParcelManagement from '../views/ParcelManagement.vue';
+import ShelfManagement from '../views/ShelfManagement.vue';
+import OverdueManagement from '../views/OverdueManagement.vue';
 import Profile from '../views/Profile.vue';
 
 const routes: Array<RouteRecordRaw> = [
@@ -49,17 +51,31 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'my-parcels',
         name: 'MyParcels',
-        component: MyParcels
+        component: MyParcels,
+        meta: { requiresUser: true }
       },
       {
         path: 'my-shipments',
         name: 'MyShipments',
-        component: MyShipments
+        component: MyShipments,
+        meta: { requiresUser: true }
       },
       {
         path: 'parcel-management',
         name: 'ParcelManagement',
         component: ParcelManagement,
+        meta: { requiresStaff: true }
+      },
+      {
+        path: 'shelf-management',
+        name: 'ShelfManagement',
+        component: ShelfManagement,
+        meta: { requiresStaff: true }
+      },
+      {
+        path: 'overdue-management',
+        name: 'OverdueManagement',
+        component: OverdueManagement,
         meta: { requiresStaff: true }
       },
       {
@@ -86,7 +102,8 @@ router.beforeEach((to, _from, next) => {
     try {
       userInfo = JSON.parse(userStr);
     } catch (e) {
-      // 忽略解析错误
+      next({ name: 'Login' });
+      return;
     }
   }
 
@@ -100,6 +117,14 @@ router.beforeEach((to, _from, next) => {
   if (to.meta.requiresStaff) {
     if (!userInfo || (userInfo.role !== 'staff' && userInfo.role !== 'admin')) {
       next({ name: 'Home' });
+      return;
+    }
+  }
+
+  // 只允许普通用户访问的页面（我的包裹、我的寄件）
+  if (to.meta.requiresUser) {
+    if (!userInfo || userInfo.role === 'staff' || userInfo.role === 'admin') {
+      next({ name: 'Dashboard' });
       return;
     }
   }

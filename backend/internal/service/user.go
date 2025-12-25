@@ -115,8 +115,8 @@ func (s *userService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.Logi
 		return nil, v1.ErrUnauthorized
 	}
 
-	// 生成JWT token (使用用户ID)
-	token, err := s.jwt.GenToken(fmt.Sprintf("%d", user.ID), time.Now().Add(time.Hour*24*90))
+	// 生成JWT token (使用用户ID和角色)
+	token, err := s.jwt.GenToken(fmt.Sprintf("%d", user.ID), user.Role, time.Now().Add(time.Hour*24*90))
 	if err != nil {
 		return nil, err
 	}

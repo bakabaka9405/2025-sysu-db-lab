@@ -1,0 +1,7 @@
+POST /api/v1/parcels/pickup
+Content-Type: application/json
+
+{
+  "pickup_code": "A12345",
+  "recipient_phone": "13800138000"
+}

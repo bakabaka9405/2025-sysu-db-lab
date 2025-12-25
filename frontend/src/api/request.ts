@@ -35,7 +35,8 @@ instance.interceptors.response.use(
           // 未授权，清除token并跳转到登录页
           localStorage.removeItem('accessToken');
           localStorage.removeItem('userInfo');
-          window.location.href = '/login';
+          if (window.location.pathname !== '/login')
+            window.location.href = '/login';
           break;
         case 403:
           console.error('没有权限访问该资源');

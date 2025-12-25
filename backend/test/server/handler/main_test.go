@@ -68,7 +68,7 @@ func performRequest(r http.Handler, method, path string, body *bytes.Buffer) *ht
 }
 
 func genToken(t *testing.T) string {
-	token, err := jwt.GenToken(fmt.Sprintf("%d", userId), time.Now().Add(time.Hour*24*90))
+	token, err := jwt.GenToken(fmt.Sprintf("%d", userId), "user", time.Now().Add(time.Hour*24*90))
 	if err != nil {
 		t.Error(err)
 		return token

@@ -35,6 +35,36 @@ func (m *MockShelfRepository) EXPECT() *MockShelfRepositoryMockRecorder {
 	return m.recorder
 }
 
+// CountActive mocks base method.
+func (m *MockShelfRepository) CountActive(ctx context.Context) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountActive", ctx)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountActive indicates an expected call of CountActive.
+func (mr *MockShelfRepositoryMockRecorder) CountActive(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountActive", reflect.TypeOf((*MockShelfRepository)(nil).CountActive), ctx)
+}
+
+// CountByType mocks base method.
+func (m *MockShelfRepository) CountByType(ctx context.Context) ([]map[string]interface{}, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountByType", ctx)
+	ret0, _ := ret[0].([]map[string]interface{})
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountByType indicates an expected call of CountByType.
+func (mr *MockShelfRepositoryMockRecorder) CountByType(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountByType", reflect.TypeOf((*MockShelfRepository)(nil).CountByType), ctx)
+}
+
 // Create mocks base method.
 func (m *MockShelfRepository) Create(ctx context.Context, shelf *model.Shelf) error {
 	m.ctrl.T.Helper()
@@ -61,6 +91,20 @@ func (m *MockShelfRepository) DecrementCount(ctx context.Context, id int64) erro
 func (mr *MockShelfRepositoryMockRecorder) DecrementCount(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DecrementCount", reflect.TypeOf((*MockShelfRepository)(nil).DecrementCount), ctx, id)
+}
+
+// Delete mocks base method.
+func (m *MockShelfRepository) Delete(ctx context.Context, id int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Delete", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Delete indicates an expected call of Delete.
+func (mr *MockShelfRepositoryMockRecorder) Delete(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockShelfRepository)(nil).Delete), ctx, id)
 }
 
 // FindAvailableShelfByType mocks base method.
@@ -136,6 +180,22 @@ func (m *MockShelfRepository) IncrementCount(ctx context.Context, id int64) erro
 func (mr *MockShelfRepositoryMockRecorder) IncrementCount(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IncrementCount", reflect.TypeOf((*MockShelfRepository)(nil).IncrementCount), ctx, id)
+}
+
+// List mocks base method.
+func (m *MockShelfRepository) List(ctx context.Context, area, shelfType, status string, page, pageSize int) ([]*model.Shelf, int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List", ctx, area, shelfType, status, page, pageSize)
+	ret0, _ := ret[0].([]*model.Shelf)
+	ret1, _ := ret[1].(int64)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// List indicates an expected call of List.
+func (mr *MockShelfRepositoryMockRecorder) List(ctx, area, shelfType, status, page, pageSize interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockShelfRepository)(nil).List), ctx, area, shelfType, status, page, pageSize)
 }
 
 // Update mocks base method.

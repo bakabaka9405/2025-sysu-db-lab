@@ -20,6 +20,7 @@ type ParcelRepository interface {
 	CountTodayPickedUp(ctx context.Context) (int, error)
 	CountOverdue(ctx context.Context) (int, error)
 	GetRecentTrends(ctx context.Context, days int) ([]map[string]interface{}, error)
+	FindOverdueParcels(ctx context.Context) ([]*model.Parcel, error)
 }
 
 type parcelRepository struct {
@@ -166,7 +167,7 @@ func (r *parcelRepository) CountOverdue(ctx context.Context) (int, error) {
 	return int(count), err
 }
 
-func (r *parcelRepository) GetRecentTrends(ctx context.Context, days int) ([]map[string]interface{}, error) {
+func (r *parcelRepository) GetRecentTrends(ctx context.Context, days int) ([]map[string]any, error) {
 	type Result struct {
 		Date     string
 		Received int
@@ -199,9 +200,9 @@ func (r *parcelRepository) GetRecentTrends(ctx context.Context, days int) ([]map
 		return nil, err
 	}
 
-	trends := make([]map[string]interface{}, len(results))
+	trends := make([]map[string]any, len(results))
 	for i, r := range results {
-		trends[i] = map[string]interface{}{
+		trends[i] = map[string]any{
 			"date":      r.Date,
 			"received":  r.Received,
 			"picked_up": r.PickedUp,
@@ -209,4 +210,13 @@ func (r *parcelRepository) GetRecentTrends(ctx context.Context, days int) ([]map
 	}
 
 	return trends, nil
+}
+
+func (r *parcelRepository) FindOverdueParcels(ctx context.Context) ([]*model.Parcel, error) {
+	var parcels []*model.Parcel
+	err := r.DB(ctx).
+		Where("expected_overdue_at < ? AND expected_overdue_at IS NOT NULL", time.Now()).
+		Where("status NOT IN ?", []string{string(model.ParcelStatusPickedUp), string(model.ParcelStatusReturned), string(model.ParcelStatusOverdue)}).
+		Find(&parcels).Error
+	return parcels, err
 }

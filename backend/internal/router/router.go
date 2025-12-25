@@ -14,4 +14,6 @@ type RouterDeps struct {
 	UserHandler     *handler.UserHandler
 	ParcelHandler   *handler.ParcelHandler
 	ShipmentHandler *handler.ShipmentHandler
+	ShelfHandler    *handler.ShelfHandler
+	OverdueHandler  *handler.OverdueHandler
 }

@@ -9,11 +9,8 @@ export enum ParcelStatus {
 }
 
 // 包裹尺寸
-export enum ParcelSize {
-  SMALL = 'small',
-  MEDIUM = 'medium',
-  LARGE = 'large'
-}
+
+export type ParcelSize = 'small' | 'medium' | 'large'
 
 // 货架信息
 export interface Shelf {
@@ -166,4 +163,97 @@ export interface DashboardStatistics {
     received: number
     picked_up: number
   }>
+}
+
+// ========== 货架相关类型 ==========
+
+// 货架列表响应
+export interface ShelfListResponse {
+  list: Shelf[]
+  pagination: {
+    page: number
+    page_size: number
+    total: number
+    total_pages: number
+  }
+}
+
+// 货架统计
+export interface ShelfStatistics {
+  total_shelves: number
+  active_shelves: number
+  total_capacity: number
+  total_used: number
+  utilization_rate: number
+  by_type: {
+    type: string
+    count: number
+    capacity: number
+    used: number
+    utilization_rate: number
+  }[]
+}
+
+// 创建货架请求
+export interface CreateShelfRequest {
+  shelf_code: string
+  area: string
+  floor: number
+  column: number
+  type: string
+  capacity: number
+}
+
+// 更新货架请求
+export interface UpdateShelfRequest {
+  area?: string
+  floor?: number
+  column?: number
+  type?: string
+  capacity?: number
+  status?: string
+}
+
+// ========== 滞留件相关类型 ==========
+
+// 滞留件信息
+export interface OverdueInfo {
+  id: number
+  parcel_id: number
+  tracking_number: string
+  pickup_code: string
+  recipient_name: string
+  recipient_phone: string
+  courier_company: string
+  size: string
+  shelf_code?: string
+  overdue_start_at: string
+  overdue_days: number
+  reminder_count: number
+  last_reminder_at?: string
+  overdue_fee: number
+  status: string
+}
+
+// 滞留件列表响应
+export interface OverdueListResponse {
+  list: OverdueInfo[]
+  pagination: {
+    page: number
+    page_size: number
+    total: number
+    total_pages: number
+  }
+}
+
+// 批量操作结果
+export interface BatchResult {
+  success: number
+  failed: number
+  errors?: string[]
+}
+
+// 批量退回请求
+export interface BatchReturnRequest {
+  ids: number[]
 }

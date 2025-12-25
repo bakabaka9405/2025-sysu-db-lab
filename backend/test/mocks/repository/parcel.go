@@ -109,6 +109,21 @@ func (mr *MockParcelRepositoryMockRecorder) Create(ctx, parcel interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockParcelRepository)(nil).Create), ctx, parcel)
 }
 
+// FindOverdueParcels mocks base method.
+func (m *MockParcelRepository) FindOverdueParcels(ctx context.Context) ([]*model.Parcel, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindOverdueParcels", ctx)
+	ret0, _ := ret[0].([]*model.Parcel)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindOverdueParcels indicates an expected call of FindOverdueParcels.
+func (mr *MockParcelRepositoryMockRecorder) FindOverdueParcels(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindOverdueParcels", reflect.TypeOf((*MockParcelRepository)(nil).FindOverdueParcels), ctx)
+}
+
 // GetByID mocks base method.
 func (m *MockParcelRepository) GetByID(ctx context.Context, id int64) (*model.Parcel, error) {
 	m.ctrl.T.Helper()

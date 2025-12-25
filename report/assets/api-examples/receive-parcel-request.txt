@@ -1,0 +1,12 @@
+POST /api/v1/parcels
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+  "tracking_number": "SF1234567890",
+  "recipient_name": "张三",
+  "recipient_phone": "13800138000",
+  "courier_company": "顺丰速运",
+  "size": "small",
+  "weight": 1.5
+}

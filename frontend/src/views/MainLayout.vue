@@ -20,7 +20,9 @@ import {
   SearchOutline,
   PersonOutline,
   LogOutOutline,
-  BarChartOutline
+  BarChartOutline,
+  GridOutline,
+  AlertCircleOutline
 } from '@vicons/ionicons5'
 
 const router = useRouter()
@@ -58,24 +60,41 @@ const menuOptions = computed<MenuOption[]>(() => {
       label: '包裹查询',
       key: '/search',
       icon: () => h(SearchOutline)
-    },
-    {
-      label: '我的包裹',
-      key: '/my-parcels',
-      icon: () => h(CubeOutline)
-    },
-    {
-      label: '我的寄件',
-      key: '/my-shipments',
-      icon: () => h(SendOutline)
     }
   ]
 
+  // 只有普通用户显示"我的包裹"和"我的寄件"
+  if (!isStaffOrAdmin.value) {
+    baseMenus.push(
+      {
+        label: '我的包裹',
+        key: '/my-parcels',
+        icon: () => h(CubeOutline)
+      },
+      {
+        label: '我的寄件',
+        key: '/my-shipments',
+        icon: () => h(SendOutline)
+      }
+    )
+  }
+
+  // staff/admin 显示管理菜单
   if (isStaffOrAdmin.value) {
     baseMenus.push({
       label: '包裹管理',
       key: '/parcel-management',
       icon: () => h(BarChartOutline)
+    })
+    baseMenus.push({
+      label: '货架管理',
+      key: '/shelf-management',
+      icon: () => h(GridOutline)
+    })
+    baseMenus.push({
+      label: '滞留件管理',
+      key: '/overdue-management',
+      icon: () => h(AlertCircleOutline)
     })
   }
 
@@ -189,7 +208,7 @@ onMounted(() => {
               <NAvatar
                 round
                 :size="32"
-                :style="{ backgroundColor: '#667eea', color: '#fff' }"
+                :style="{ backgroundColor: '#18a058', color: '#fff' }"
               >
                 {{ userInfo?.username?.charAt(0).toUpperCase() || 'U' }}
               </NAvatar>
@@ -236,7 +255,7 @@ onMounted(() => {
 }
 
 .brand-title {
-  color: #667eea;
+  color: #18a058;
   margin: 0;
   font-size: 20px;
   font-weight: bold;
@@ -244,7 +263,7 @@ onMounted(() => {
 }
 
 .brand-title-collapsed {
-  color: #667eea;
+  color: #18a058;
   margin: 0;
   font-size: 16px;
   font-weight: bold;

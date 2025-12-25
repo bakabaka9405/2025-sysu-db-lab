@@ -311,7 +311,7 @@ onMounted(() => {
         </NFormItem>
 
         <NFormItem v-if="estimatedFreight !== null" label="预估运费">
-          <strong style="font-size: 20px; color: #667eea;">¥{{ estimatedFreight }}</strong>
+          <strong style="font-size: 20px; color: #18a058;">¥{{ estimatedFreight }}</strong>
         </NFormItem>
       </NForm>
 

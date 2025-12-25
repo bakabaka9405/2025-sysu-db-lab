@@ -1,4 +1,166 @@
 definitions:
+  v1.BatchResult:
+    properties:
+      errors:
+        items:
+          type: string
+        type: array
+      failed:
+        type: integer
+      success:
+        type: integer
+    type: object
+  v1.BatchReturnRequest:
+    properties:
+      ids:
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
+  v1.CalculateFreightData:
+    properties:
+      calculation_details:
+        properties:
+          base_freight:
+            type: number
+          volume_freight:
+            type: number
+          weight_freight:
+            type: number
+        type: object
+      freight:
+        type: number
+    type: object
+  v1.CalculateFreightRequest:
+    properties:
+      courier_company:
+        example: 顺丰速运
+        type: string
+      volume:
+        example: 0.05
+        type: number
+      weight:
+        example: 2.5
+        type: number
+    required:
+    - courier_company
+    - volume
+    - weight
+    type: object
+  v1.CreateShelfRequest:
+    properties:
+      area:
+        example: A
+        type: string
+      capacity:
+        example: 20
+        minimum: 1
+        type: integer
+      column:
+        example: 1
+        minimum: 1
+        type: integer
+      floor:
+        example: 1
+        minimum: 1
+        type: integer
+      shelf_code:
+        example: A-1-1
+        type: string
+      type:
+        enum:
+        - small
+        - medium
+        - large
+        example: small
+        type: string
+    required:
+    - area
+    - capacity
+    - column
+    - floor
+    - shelf_code
+    - type
+    type: object
+  v1.CreateShipmentRequest:
+    properties:
+      courier_company:
+        example: 顺丰速运
+        type: string
+      recipient_address:
+        example: 广东省广州市天河区XX路XX号
+        type: string
+      recipient_name:
+        example: 李四
+        type: string
+      recipient_phone:
+        example: "13900139000"
+        type: string
+      volume:
+        example: 0.05
+        type: number
+      weight:
+        example: 2.5
+        type: number
+    required:
+    - courier_company
+    - recipient_address
+    - recipient_name
+    - recipient_phone
+    - volume
+    - weight
+    type: object
+  v1.DashboardStatistics:
+    properties:
+      parcels:
+        properties:
+          overdue:
+            type: integer
+          picked_up:
+            type: integer
+          ready_for_pickup:
+            type: integer
+          received:
+            type: integer
+          returned:
+            type: integer
+          shelved:
+            type: integer
+          total:
+            type: integer
+        type: object
+      recent_trends:
+        items:
+          properties:
+            date:
+              type: string
+            picked_up:
+              type: integer
+            received:
+              type: integer
+          type: object
+        type: array
+      shelves:
+        properties:
+          total_capacity:
+            type: integer
+          total_used:
+            type: integer
+          utilization_rate:
+            type: number
+        type: object
+      today:
+        properties:
+          overdue_count:
+            type: integer
+          picked_up_count:
+            type: integer
+          received_count:
+            type: integer
+        type: object
+    type: object
   v1.GetProfileResponse:
     properties:
       code:
@@ -10,23 +172,32 @@ definitions:
     type: object
   v1.GetProfileResponseData:
     properties:
-      nickname:
-        example: alan
+      email:
         type: string
-      userId:
+      id:
+        type: integer
+      idCard:
+        type: string
+      phone:
+        type: string
+      realName:
+        type: string
+      role:
+        type: string
+      username:
         type: string
     type: object
   v1.LoginRequest:
     properties:
-      email:
-        example: 1234@gmail.com
-        type: string
       password:
         example: "123456"
         type: string
+      usernameOrPhone:
+        example: zhangsan
+        type: string
     required:
-    - email
     - password
+    - usernameOrPhone
     type: object
   v1.LoginResponse:
     properties:
@@ -41,18 +212,182 @@ definitions:
     properties:
       accessToken:
         type: string
+      user:
+        $ref: '#/definitions/v1.UserInfo'
+    type: object
+  v1.OverdueInfo:
+    properties:
+      courier_company:
+        type: string
+      id:
+        type: integer
+      last_reminder_at:
+        type: string
+      overdue_days:
+        type: integer
+      overdue_fee:
+        type: number
+      overdue_start_at:
+        type: string
+      parcel_id:
+        type: integer
+      pickup_code:
+        type: string
+      recipient_name:
+        type: string
+      recipient_phone:
+        type: string
+      reminder_count:
+        type: integer
+      shelf_code:
+        type: string
+      size:
+        type: string
+      status:
+        type: string
+      tracking_number:
+        type: string
+    type: object
+  v1.OverdueListData:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/v1.OverdueInfo'
+        type: array
+      pagination:
+        $ref: '#/definitions/v1.Pagination'
+    type: object
+  v1.Pagination:
+    properties:
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  v1.ParcelInfo:
+    properties:
+      courier_company:
+        type: string
+      expected_overdue_at:
+        type: string
+      id:
+        type: integer
+      notes:
+        type: string
+      picked_up_at:
+        type: string
+      pickup_code:
+        type: string
+      received_at:
+        type: string
+      recipient_name:
+        type: string
+      recipient_phone:
+        type: string
+      shelf:
+        $ref: '#/definitions/v1.ShelfInfo'
+      shelved_at:
+        type: string
+      size:
+        type: string
+      status:
+        type: string
+      tracking_number:
+        type: string
+      weight:
+        type: number
+    type: object
+  v1.ParcelListData:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/v1.ParcelInfo'
+        type: array
+      pagination:
+        $ref: '#/definitions/v1.Pagination'
+    type: object
+  v1.PickupParcelRequest:
+    properties:
+      pickup_code:
+        example: A12345
+        type: string
+      recipient_phone:
+        example: "13800138000"
+        type: string
+    required:
+    - pickup_code
+    - recipient_phone
+    type: object
+  v1.ReceiveParcelRequest:
+    properties:
+      courier_company:
+        example: 顺丰速运
+        type: string
+      notes:
+        example: 易碎物品
+        type: string
+      recipient_id_card:
+        example: "440101199001011234"
+        type: string
+      recipient_name:
+        example: 张三
+        type: string
+      recipient_phone:
+        example: "13800138000"
+        type: string
+      size:
+        enum:
+        - small
+        - medium
+        - large
+        example: small
+        type: string
+      tracking_number:
+        example: SF1234567890
+        type: string
+      weight:
+        example: 1.5
+        type: number
+    required:
+    - courier_company
+    - recipient_name
+    - recipient_phone
+    - size
+    - tracking_number
+    - weight
     type: object
   v1.RegisterRequest:
     properties:
       email:
-        example: 1234@gmail.com
+        example: zhangsan@example.com
+        type: string
+      idCard:
+        example: "440101199001011234"
         type: string
       password:
         example: "123456"
+        minLength: 6
+        type: string
+      phone:
+        example: "13800138000"
+        type: string
+      realName:
+        example: 张三
+        type: string
+      username:
+        example: zhangsan
+        maxLength: 20
+        minLength: 3
         type: string
     required:
-    - email
     - password
+    - phone
+    - realName
+    - username
     type: object
   v1.Response:
     properties:
@@ -62,16 +397,148 @@ definitions:
       message:
         type: string
     type: object
+  v1.ShelfInfo:
+    properties:
+      area:
+        type: string
+      capacity:
+        type: integer
+      column:
+        type: integer
+      current_count:
+        type: integer
+      floor:
+        type: integer
+      id:
+        type: integer
+      shelf_code:
+        type: string
+      status:
+        type: string
+      type:
+        type: string
+    type: object
+  v1.ShelfListData:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/v1.ShelfInfo'
+        type: array
+      pagination:
+        $ref: '#/definitions/v1.Pagination'
+    type: object
+  v1.ShelfStatistics:
+    properties:
+      active_shelves:
+        type: integer
+      by_type:
+        items:
+          properties:
+            capacity:
+              type: integer
+            count:
+              type: integer
+            type:
+              type: string
+            used:
+              type: integer
+            utilization_rate:
+              type: number
+          type: object
+        type: array
+      total_capacity:
+        type: integer
+      total_shelves:
+        type: integer
+      total_used:
+        type: integer
+      utilization_rate:
+        type: number
+    type: object
+  v1.ShipmentInfo:
+    properties:
+      courier_company:
+        type: string
+      created_at:
+        type: string
+      freight:
+        type: number
+      id:
+        type: integer
+      recipient_address:
+        type: string
+      recipient_name:
+        type: string
+      recipient_phone:
+        type: string
+      sender_name:
+        type: string
+      sender_phone:
+        type: string
+      shipment_number:
+        type: string
+      shipped_at:
+        type: string
+      status:
+        type: string
+      volume:
+        type: number
+      weight:
+        type: number
+    type: object
+  v1.ShipmentListData:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/v1.ShipmentInfo'
+        type: array
+      pagination:
+        $ref: '#/definitions/v1.Pagination'
+    type: object
   v1.UpdateProfileRequest:
     properties:
       email:
-        example: 1234@gmail.com
+        example: zhangsan@example.com
         type: string
-      nickname:
-        example: alan
+      realName:
+        example: 张三
         type: string
-    required:
-    - email
+    type: object
+  v1.UpdateShelfRequest:
+    properties:
+      area:
+        example: A
+        type: string
+      capacity:
+        example: 20
+        type: integer
+      column:
+        example: 1
+        type: integer
+      floor:
+        example: 1
+        type: integer
+      status:
+        example: active
+        type: string
+      type:
+        example: small
+        type: string
+    type: object
+  v1.UserInfo:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      phone:
+        type: string
+      realName:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
     type: object
 host: localhost:8000
 info:
@@ -87,10 +554,53 @@ info:
   title: Nunu Example API
   version: 1.0.0
 paths:
+  /courier-companies:
+    get:
+      consumes:
+      - application/json
+      description: 获取支持的快递公司列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  items:
+                    type: string
+                  type: array
+              type: object
+      summary: 获取快递公司列表
+      tags:
+      - 寄件管理
+  /dashboard/statistics:
+    get:
+      consumes:
+      - application/json
+      description: 获取包裹和货架的统计信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.DashboardStatistics'
+              type: object
+      summary: 获取仪表盘统计数据
+      tags:
+      - 统计
   /login:
     post:
       consumes:
       - application/json
+      description: 支持用户名或手机号登录
       parameters:
       - description: params
         in: body
@@ -108,11 +618,338 @@ paths:
       summary: 账号登录
       tags:
       - 用户模块
+  /my-parcels:
+    get:
+      consumes:
+      - application/json
+      description: 用户获取自己的包裹列表
+      parameters:
+      - description: 包裹状态
+        in: query
+        name: status
+        type: string
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.ParcelListData'
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取我的包裹
+      tags:
+      - 包裹管理
+  /my-shipments:
+    get:
+      consumes:
+      - application/json
+      description: 用户获取自己的寄件单列表
+      parameters:
+      - description: 寄件单状态
+        in: query
+        name: status
+        type: string
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.ShipmentListData'
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取我的寄件单列表
+      tags:
+      - 寄件管理
+  /overdue:
+    get:
+      consumes:
+      - application/json
+      description: 获取滞留件列表，支持按状态筛选
+      parameters:
+      - description: 状态
+        in: query
+        name: status
+        type: string
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.OverdueListData'
+              type: object
+      summary: 获取滞留件列表
+      tags:
+      - 滞留件管理
+  /overdue/{id}/remind:
+    post:
+      consumes:
+      - application/json
+      description: 对指定滞留件发送提醒通知
+      parameters:
+      - description: 滞留记录ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.Response'
+      security:
+      - Bearer: []
+      summary: 发送滞留提醒
+      tags:
+      - 滞留件管理
+  /overdue/batch-return:
+    post:
+      consumes:
+      - application/json
+      description: 批量将滞留件退回
+      parameters:
+      - description: 退回请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.BatchReturnRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.BatchResult'
+              type: object
+      security:
+      - Bearer: []
+      summary: 批量退回滞留件
+      tags:
+      - 滞留件管理
+  /overdue/check:
+    post:
+      consumes:
+      - application/json
+      description: 手动触发检查滞留件（通常由定时任务调用）
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.Response'
+      security:
+      - Bearer: []
+      summary: 检查并标记滞留件
+      tags:
+      - 滞留件管理
+  /parcels:
+    get:
+      consumes:
+      - application/json
+      description: 工作人员获取包裹列表，支持筛选
+      parameters:
+      - description: 包裹状态
+        in: query
+        name: status
+        type: string
+      - description: 快递公司
+        in: query
+        name: courier_company
+        type: string
+      - description: 收件人手机号
+        in: query
+        name: recipient_phone
+        type: string
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.ParcelListData'
+              type: object
+      summary: 获取包裹列表（管理端）
+      tags:
+      - 包裹管理
+  /parcels/by-pickup-code/{code}:
+    get:
+      consumes:
+      - application/json
+      description: 根据取件码查询包裹信息
+      parameters:
+      - description: 取件码
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.ParcelInfo'
+              type: object
+      summary: 通过取件码查询包裹
+      tags:
+      - 包裹管理
+  /parcels/by-tracking/{number}:
+    get:
+      consumes:
+      - application/json
+      description: 根据快递单号查询包裹信息
+      parameters:
+      - description: 快递单号
+        in: path
+        name: number
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.ParcelInfo'
+              type: object
+      summary: 通过快递单号查询包裹
+      tags:
+      - 包裹管理
+  /parcels/pickup:
+    post:
+      consumes:
+      - application/json
+      description: 用户凭取件码和手机号取件
+      parameters:
+      - description: 取件信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.PickupParcelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.ParcelInfo'
+              type: object
+      summary: 包裹取件
+      tags:
+      - 包裹管理
+  /parcels/receive:
+    post:
+      consumes:
+      - application/json
+      description: 工作人员将包裹录入系统并上架
+      parameters:
+      - description: 入库信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.ReceiveParcelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.ParcelInfo'
+              type: object
+      summary: 包裹入库
+      tags:
+      - 包裹管理
   /register:
     post:
       consumes:
       - application/json
-      description: 目前只支持邮箱登录
+      description: 注册新用户，需要提供用户名、密码、真实姓名和手机号
       parameters:
       - description: params
         in: body
@@ -130,10 +967,267 @@ paths:
       summary: 用户注册
       tags:
       - 用户模块
+  /shelves:
+    get:
+      consumes:
+      - application/json
+      description: 获取货架列表，支持筛选
+      parameters:
+      - description: 区域
+        in: query
+        name: area
+        type: string
+      - description: 类型
+        in: query
+        name: type
+        type: string
+      - description: 状态
+        in: query
+        name: status
+        type: string
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.ShelfListData'
+              type: object
+      summary: 获取货架列表
+      tags:
+      - 货架管理
+    post:
+      consumes:
+      - application/json
+      description: 管理员创建新货架
+      parameters:
+      - description: 货架信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.CreateShelfRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.ShelfInfo'
+              type: object
+      security:
+      - Bearer: []
+      summary: 创建货架
+      tags:
+      - 货架管理
+  /shelves/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 管理员删除货架
+      parameters:
+      - description: 货架ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.Response'
+      security:
+      - Bearer: []
+      summary: 删除货架
+      tags:
+      - 货架管理
+    get:
+      consumes:
+      - application/json
+      description: 获取单个货架详情
+      parameters:
+      - description: 货架ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.ShelfInfo'
+              type: object
+      summary: 获取货架详情
+      tags:
+      - 货架管理
+    put:
+      consumes:
+      - application/json
+      description: 管理员更新货架信息
+      parameters:
+      - description: 货架ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 货架信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.UpdateShelfRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.ShelfInfo'
+              type: object
+      security:
+      - Bearer: []
+      summary: 更新货架
+      tags:
+      - 货架管理
+  /shelves/statistics:
+    get:
+      consumes:
+      - application/json
+      description: 获取货架统计数据
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.ShelfStatistics'
+              type: object
+      summary: 获取货架统计
+      tags:
+      - 货架管理
+  /shipments:
+    post:
+      consumes:
+      - application/json
+      description: 用户创建寄件单
+      parameters:
+      - description: 寄件信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.CreateShipmentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.ShipmentInfo'
+              type: object
+      security:
+      - Bearer: []
+      summary: 创建寄件单
+      tags:
+      - 寄件管理
+  /shipments/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 获取寄件单详细信息
+      parameters:
+      - description: 寄件单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.ShipmentInfo'
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取寄件单详情
+      tags:
+      - 寄件管理
+  /shipments/calculate-freight:
+    post:
+      consumes:
+      - application/json
+      description: 计算寄件运费
+      parameters:
+      - description: 运费计算参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.CalculateFreightRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.CalculateFreightData'
+              type: object
+      summary: 运费试算
+      tags:
+      - 寄件管理
   /user:
     get:
       consumes:
       - application/json
+      description: 获取当前登录用户的详细信息
       produces:
       - application/json
       responses:
@@ -149,6 +1243,7 @@ paths:
     put:
       consumes:
       - application/json
+      description: 更新当前用户的个人信息
       parameters:
       - description: params
         in: body

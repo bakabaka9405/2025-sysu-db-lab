@@ -158,7 +158,7 @@ const formatDateTime = (dateStr?: string) => {
           bordered
         >
           <NDescriptionsItem label="取件码">
-            <strong style="font-size: 20px; color: #667eea;">{{ searchResult.pickup_code }}</strong>
+            <strong style="font-size: 20px; color: #18a058;">{{ searchResult.pickup_code }}</strong>
           </NDescriptionsItem>
           <NDescriptionsItem label="快递单号">
             {{ searchResult.tracking_number }}
@@ -230,7 +230,7 @@ const formatDateTime = (dateStr?: string) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #36ad6a 0%, #18a058 100%);
   padding: 40px 20px;
 }
 

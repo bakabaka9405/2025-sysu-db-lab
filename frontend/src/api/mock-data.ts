@@ -43,7 +43,7 @@ const generateMockParcels = (): Parcel[] => {
     ParcelStatus.OVERDUE
   ]
 
-  const sizes: ParcelSize[] = [ParcelSize.SMALL, ParcelSize.MEDIUM, ParcelSize.LARGE]
+  const sizes: ParcelSize[] = ['small', 'medium', 'large']
 
   const recipients = ['张三', '李四', '王五', '赵六', '钱七', '孙八', '周九', '吴十']
 

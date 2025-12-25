@@ -255,7 +255,7 @@ const handleRegister = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #36ad6a 0%, #18a058 100%);
   padding: 20px 0;
 }
 
@@ -317,20 +317,20 @@ const handleRegister = async () => {
 }
 
 .link {
-  color: #667eea;
+  color: #18a058;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.3s ease;
 }
 
 .link:hover {
-  color: #5568d3;
+  color: #0c7a43;
   text-decoration: underline;
 }
 
 .register-right {
   flex: 1;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #36ad6a 0%, #18a058 100%);
   display: flex;
   justify-content: center;
   align-items: center;

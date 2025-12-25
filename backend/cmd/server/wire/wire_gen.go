@@ -42,6 +42,11 @@ func NewWire(viperViper *viper.Viper, logger *log.Logger) (*app.App, func(), err
 	shipmentRepository := repository.NewShipmentRepository(repositoryRepository)
 	shipmentService := service.NewShipmentService(shipmentRepository)
 	shipmentHandler := handler.NewShipmentHandler(handlerHandler, shipmentService)
+	shelfService := service.NewShelfService(shelfRepository)
+	shelfHandler := handler.NewShelfHandler(handlerHandler, shelfService)
+	overdueRepository := repository.NewOverdueRepository(repositoryRepository)
+	overdueService := service.NewOverdueService(overdueRepository, parcelRepository, shelfRepository, transaction)
+	overdueHandler := handler.NewOverdueHandler(handlerHandler, overdueService)
 	routerDeps := router.RouterDeps{
 		Logger:          logger,
 		Config:          viperViper,
@@ -49,6 +54,8 @@ func NewWire(viperViper *viper.Viper, logger *log.Logger) (*app.App, func(), err
 		UserHandler:     userHandler,
 		ParcelHandler:   parcelHandler,
 		ShipmentHandler: shipmentHandler,
+		ShelfHandler:    shelfHandler,
+		OverdueHandler:  overdueHandler,
 	}
 	httpServer := server.NewHTTPServer(routerDeps)
 	jobJob := job.NewJob(transaction, logger, sidSid)
@@ -61,11 +68,11 @@ func NewWire(viperViper *viper.Viper, logger *log.Logger) (*app.App, func(), err
 
 // wire.go:
 
-var repositorySet = wire.NewSet(repository.NewDB, repository.NewRepository, repository.NewTransaction, repository.NewUserRepository, repository.NewParcelRepository, repository.NewShelfRepository, repository.NewShipmentRepository)
+var repositorySet = wire.NewSet(repository.NewDB, repository.NewRepository, repository.NewTransaction, repository.NewUserRepository, repository.NewParcelRepository, repository.NewShelfRepository, repository.NewShipmentRepository, repository.NewOverdueRepository)
 
-var serviceSet = wire.NewSet(service.NewService, service.NewUserService, service.NewParcelService, service.NewShipmentService)
+var serviceSet = wire.NewSet(service.NewService, service.NewUserService, service.NewParcelService, service.NewShipmentService, service.NewShelfService, service.NewOverdueService)
 
-var handlerSet = wire.NewSet(handler.NewHandler, handler.NewUserHandler, handler.NewParcelHandler, handler.NewShipmentHandler)
+var handlerSet = wire.NewSet(handler.NewHandler, handler.NewUserHandler, handler.NewParcelHandler, handler.NewShipmentHandler, handler.NewShelfHandler, handler.NewOverdueHandler)
 
 var jobSet = wire.NewSet(job.NewJob, job.NewUserJob)
 
