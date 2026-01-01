@@ -12,9 +12,11 @@ import {
   NDescriptions,
   NDescriptionsItem,
   NTag,
+  NModal,
+  NSpace,
   useMessage
 } from 'naive-ui'
-import { getParcelByPickupCode, getParcelByTrackingNumber } from '../api/parcel'
+import { getParcelByPickupCode, getParcelByTrackingNumber, pickupParcel } from '../api/parcel'
 import type { Parcel } from '../api/types'
 
 const message = useMessage()
@@ -25,14 +27,55 @@ const loading = ref(false)
 const searchResult = ref<Parcel | null>(null)
 const searchError = ref('')
 
+// 取件弹窗
+const showPickupModal = ref(false)
+const pickupLoading = ref(false)
+const verifyPhone = ref('')
+
 // 包裹状态映射
 const parcelStatusMap: Record<string, { text: string; type: any }> = {
-  received: { text: '已接收', type: 'info' },
-  shelved: { text: '已上架', type: 'info' },
   ready_for_pickup: { text: '待取件', type: 'success' },
   picked_up: { text: '已取件', type: 'default' },
   overdue: { text: '滞留', type: 'warning' },
   returned: { text: '已退回', type: 'error' }
+}
+
+// 是否可以取件
+const canPickup = () => {
+  return searchResult.value &&
+    (searchResult.value.status === 'ready_for_pickup' || searchResult.value.status === 'overdue')
+}
+
+// 打开取件弹窗
+const handleOpenPickup = () => {
+  verifyPhone.value = ''
+  showPickupModal.value = true
+}
+
+// 提交取件
+const handleSubmitPickup = async () => {
+  if (pickupLoading.value || !searchResult.value) return
+
+  if (!verifyPhone.value) {
+    message.error('请输入手机号进行验证')
+    return
+  }
+
+  pickupLoading.value = true
+  const res = await pickupParcel({
+    pickup_code: searchResult.value.pickup_code,
+    recipient_phone: verifyPhone.value
+  })
+
+  if (res.code === 0) {
+    message.success('取件成功！')
+    showPickupModal.value = false
+    // 更新查询结果
+    searchResult.value = res.data || null
+  } else {
+    message.error(res.message || '取件失败')
+  }
+  pickupLoading.value = false
 }
 
 // 查询包裹

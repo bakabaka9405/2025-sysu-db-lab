@@ -20,28 +20,6 @@ export const getParcelList = async (params?: {
 }): Promise<ApiResponse<ParcelListResponse>> => {
   try {
     const response: any = await request.get('/parcels', { params });
-
-    // 转换后端字段名到前端格式
-    if (response.code === 0 && response.data) {
-      response.data.list = response.data.list.map((item: any) => ({
-        ...item,
-        recipientName: item.recipient_name,
-        recipientPhone: item.recipient_phone,
-        trackingNumber: item.tracking_number,
-        pickupCode: item.pickup_code,
-        courierCompany: item.courier_company,
-        receivedAt: item.received_at,
-        shelvedAt: item.shelved_at,
-        pickedUpAt: item.picked_up_at,
-        expectedOverdueAt: item.expected_overdue_at,
-        shelf: item.shelf ? {
-          ...item.shelf,
-          shelfCode: item.shelf.shelf_code,
-          currentCount: item.shelf.current_count
-        } : undefined
-      }));
-    }
-
     return response;
   } catch (error: any) {
     return {
@@ -62,28 +40,6 @@ export const getMyParcels = async (params?: {
 }): Promise<ApiResponse<ParcelListResponse>> => {
   try {
     const response: any = await request.get('/my-parcels', { params });
-
-    // 转换后端字段名到前端格式
-    if (response.code === 0 && response.data) {
-      response.data.list = response.data.list.map((item: any) => ({
-        ...item,
-        recipientName: item.recipient_name,
-        recipientPhone: item.recipient_phone,
-        trackingNumber: item.tracking_number,
-        pickupCode: item.pickup_code,
-        courierCompany: item.courier_company,
-        receivedAt: item.received_at,
-        shelvedAt: item.shelved_at,
-        pickedUpAt: item.picked_up_at,
-        expectedOverdueAt: item.expected_overdue_at,
-        shelf: item.shelf ? {
-          ...item.shelf,
-          shelfCode: item.shelf.shelf_code,
-          currentCount: item.shelf.current_count
-        } : undefined
-      }));
-    }
-
     return response;
   } catch (error: any) {
     return {
@@ -100,28 +56,6 @@ export const getMyParcels = async (params?: {
 export const getParcelByPickupCode = async (pickupCode: string): Promise<ApiResponse<Parcel>> => {
   try {
     const response: any = await request.get(`/parcels/by-pickup-code/${pickupCode}`);
-
-    // 转换后端字段名到前端格式
-    if (response.code === 0 && response.data) {
-      response.data = {
-        ...response.data,
-        recipientName: response.data.recipient_name,
-        recipientPhone: response.data.recipient_phone,
-        trackingNumber: response.data.tracking_number,
-        pickupCode: response.data.pickup_code,
-        courierCompany: response.data.courier_company,
-        receivedAt: response.data.received_at,
-        shelvedAt: response.data.shelved_at,
-        pickedUpAt: response.data.picked_up_at,
-        expectedOverdueAt: response.data.expected_overdue_at,
-        shelf: response.data.shelf ? {
-          ...response.data.shelf,
-          shelfCode: response.data.shelf.shelf_code,
-          currentCount: response.data.shelf.current_count
-        } : undefined
-      };
-    }
-
     return response;
   } catch (error: any) {
     return {
@@ -140,28 +74,6 @@ export const getParcelByTrackingNumber = async (
 ): Promise<ApiResponse<Parcel>> => {
   try {
     const response: any = await request.get(`/parcels/by-tracking/${trackingNumber}`);
-
-    // 转换后端字段名到前端格式
-    if (response.code === 0 && response.data) {
-      response.data = {
-        ...response.data,
-        recipientName: response.data.recipient_name,
-        recipientPhone: response.data.recipient_phone,
-        trackingNumber: response.data.tracking_number,
-        pickupCode: response.data.pickup_code,
-        courierCompany: response.data.courier_company,
-        receivedAt: response.data.received_at,
-        shelvedAt: response.data.shelved_at,
-        pickedUpAt: response.data.picked_up_at,
-        expectedOverdueAt: response.data.expected_overdue_at,
-        shelf: response.data.shelf ? {
-          ...response.data.shelf,
-          shelfCode: response.data.shelf.shelf_code,
-          currentCount: response.data.shelf.current_count
-        } : undefined
-      };
-    }
-
     return response;
   } catch (error: any) {
     return {
@@ -180,28 +92,6 @@ export const receiveParcel = async (
 ): Promise<ApiResponse<Parcel>> => {
   try {
     const response: any = await request.post('/parcels/receive', data);
-
-    // 转换后端字段名到前端格式
-    if (response.code === 0 && response.data) {
-      response.data = {
-        ...response.data,
-        recipientName: response.data.recipient_name,
-        recipientPhone: response.data.recipient_phone,
-        trackingNumber: response.data.tracking_number,
-        pickupCode: response.data.pickup_code,
-        courierCompany: response.data.courier_company,
-        receivedAt: response.data.received_at,
-        shelvedAt: response.data.shelved_at,
-        pickedUpAt: response.data.picked_up_at,
-        expectedOverdueAt: response.data.expected_overdue_at,
-        shelf: response.data.shelf ? {
-          ...response.data.shelf,
-          shelfCode: response.data.shelf.shelf_code,
-          currentCount: response.data.shelf.current_count
-        } : undefined
-      };
-    }
-
     return response;
   } catch (error: any) {
     return {
@@ -218,23 +108,6 @@ export const receiveParcel = async (
 export const pickupParcel = async (data: PickupParcelRequest): Promise<ApiResponse<Parcel>> => {
   try {
     const response: any = await request.post('/parcels/pickup', data);
-
-    // 转换后端字段名到前端格式
-    if (response.code === 0 && response.data) {
-      response.data = {
-        ...response.data,
-        recipientName: response.data.recipient_name,
-        recipientPhone: response.data.recipient_phone,
-        trackingNumber: response.data.tracking_number,
-        pickupCode: response.data.pickup_code,
-        courierCompany: response.data.courier_company,
-        receivedAt: response.data.received_at,
-        shelvedAt: response.data.shelved_at,
-        pickedUpAt: response.data.picked_up_at,
-        expectedOverdueAt: response.data.expected_overdue_at
-      };
-    }
-
     return response;
   } catch (error: any) {
     return {

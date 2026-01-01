@@ -12,7 +12,7 @@ type User struct {
 	Password  string         `gorm:"not null;column:password" json:"-"` // 不在JSON中显示密码
 	RealName  string         `gorm:"column:real_name" json:"realName"`
 	Phone     string         `gorm:"uniqueIndex;not null;column:phone" json:"phone"`
-	IDCard    string         `gorm:"uniqueIndex;column:id_card" json:"idCard,omitempty"`
+	IDCard    string         `gorm:"column:id_card" json:"idCard,omitempty"`
 	Email     string         `gorm:"column:email" json:"email,omitempty"`
 	Role      string         `gorm:"not null;default:'user';column:role" json:"role"` // user, staff, admin
 	CreatedAt time.Time      `gorm:"column:created_at" json:"createdAt"`

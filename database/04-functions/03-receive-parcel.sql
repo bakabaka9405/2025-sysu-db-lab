@@ -52,7 +52,7 @@ BEGIN
     ) VALUES (
         p_tracking_number, v_pickup_code, p_recipient_name,
         p_recipient_phone, p_recipient_id_card, p_courier_company,
-        p_size, p_weight, 'received', v_shelf_id, p_notes
+        p_size, p_weight, 'ready_for_pickup', v_shelf_id, p_notes
     ) RETURNING id INTO v_parcel_id;
 
     RETURN QUERY SELECT v_parcel_id, v_pickup_code, v_shelf_code, v_shelf_area, v_shelf_floor, v_shelf_column;

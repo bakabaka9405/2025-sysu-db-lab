@@ -140,54 +140,41 @@ const columns: DataTableColumns<OverdueInfo> = [
 // 加载滞留件列表
 const loadOverdueList = async () => {
   loading.value = true
-  try {
-    const res = await getOverdueList({
-      status: statusFilter.value || undefined,
-      page: page.value,
-      page_size: pageSize.value
-    })
+  const res = await getOverdueList({
+    status: statusFilter.value || undefined,
+    page: page.value,
+    page_size: pageSize.value
+  })
 
-    if (res.code === 0 && res.data) {
-      overdueList.value = res.data.list
-      total.value = res.data.pagination.total
-    } else {
-      message.error(res.message || '加载失败')
-    }
-  } catch (error: any) {
-    message.error(error.message || '加载失败')
-  } finally {
-    loading.value = false
+  if (res.code === 0 && res.data) {
+    overdueList.value = res.data.list
+    total.value = res.data.pagination.total
+  } else {
+    message.error(res.message || '加载失败')
   }
+  loading.value = false
 }
 
 // 发送提醒
 const handleSendReminder = async (row: OverdueInfo) => {
-  try {
-    const res = await sendReminder(row.id)
-    if (res.code === 0) {
-      message.success('提醒已发送')
-      loadOverdueList()
-    } else {
-      message.error(res.message || '发送失败')
-    }
-  } catch (error: any) {
-    message.error(error.message || '发送失败')
+  const res = await sendReminder(row.id)
+  if (res.code === 0) {
+    message.success('提醒已发送')
+    loadOverdueList()
+  } else {
+    message.error(res.message || '发送失败')
   }
 }
 
 // 退回包裹
 const handleReturn = async (ids: number[]) => {
-  try {
-    const res = await batchReturn(ids)
-    if (res.code === 0 && res.data) {
-      message.success(`成功退回 ${res.data.success} 个包裹`)
-      checkedRowKeys.value = []
-      loadOverdueList()
-    } else {
-      message.error(res.message || '退回失败')
-    }
-  } catch (error: any) {
-    message.error(error.message || '退回失败')
+  const res = await batchReturn(ids)
+  if (res.code === 0 && res.data) {
+    message.success(`成功退回 ${res.data.success} 个包裹`)
+    checkedRowKeys.value = []
+    loadOverdueList()
+  } else {
+    message.error(res.message || '退回失败')
   }
 }
 
@@ -203,16 +190,12 @@ const handleBatchReturn = () => {
 
 // 手动检查滞留件
 const handleCheckOverdue = async () => {
-  try {
-    const res = await checkOverdue()
-    if (res.code === 0 && res.data) {
-      message.success(`已标记 ${res.data.marked_count} 个新滞留件`)
-      loadOverdueList()
-    } else {
-      message.error(res.message || '检查失败')
-    }
-  } catch (error: any) {
-    message.error(error.message || '检查失败')
+  const res = await checkOverdue()
+  if (res.code === 0 && res.data) {
+    message.success(`已标记 ${res.data.marked_count} 个新滞留件`)
+    loadOverdueList()
+  } else {
+    message.error(res.message || '检查失败')
   }
 }
 

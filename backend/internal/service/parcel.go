@@ -63,7 +63,7 @@ func (s *parcelService) ReceiveParcel(ctx context.Context, req *v1.ReceiveParcel
 			CourierCompany:   req.CourierCompany,
 			Size:             model.ParcelSize(req.Size),
 			Weight:           req.Weight,
-			Status:           model.ParcelStatusReceived,
+			Status:           model.ParcelStatusReadyForPickup,
 			ShelfID:          &shelf.ID,
 			ReceivedAt:       time.Now(),
 			Notes:            req.Notes,
@@ -102,6 +102,15 @@ func (s *parcelService) PickupParcel(ctx context.Context, req *v1.PickupParcelRe
 
 	if parcel.Status == model.ParcelStatusPickedUp {
 		return nil, errors.New("该包裹已被取走")
+	}
+
+	if parcel.Status == model.ParcelStatusReturned {
+		return nil, errors.New("该包裹已被退回")
+	}
+
+	// 只有待取件或滞留状态的包裹才能取件
+	if parcel.Status != model.ParcelStatusReadyForPickup && parcel.Status != model.ParcelStatusOverdue {
+		return nil, errors.New("该包裹当前状态不允许取件")
 	}
 
 	err = s.tm.Transaction(ctx, func(ctx context.Context) error {

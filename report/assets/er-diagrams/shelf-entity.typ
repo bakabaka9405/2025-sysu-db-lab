@@ -1,30 +1,42 @@
-#import "@preview/cetz:0.4.2"
+// 货架实体 ER 图 - 使用 fletcher 包
+#import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node
+#import fletcher.shapes: ellipse, rect
 
-#cetz.canvas({
-  import cetz.draw: *
+#diagram(
+  spacing: (15pt, 12pt),
+  node-stroke: 1pt,
+  edge-stroke: 0.8pt,
 
-  // 货架实体矩形
-  rect((0, 0), (4, 2), stroke: 2pt)
-  content((2, 1), text(size: 14pt, weight: "bold")[货架 Shelf])
+  // 中央实体
+  node(
+    (0, 0),
+    text(size: 12pt, weight: "bold")[货架 Shelf],
+    stroke: 2pt,
+    shape: rect,
+    width: 3cm,
+    height: 1.2cm,
+    name: <entity>,
+  ),
 
-  // 属性椭圆
-  let attrs = (
-    ("货架ID", (2, 3)),
-    ("货架编号", (-1.5, 2)),
-    ("区域", (5.5, 2)),
-    ("楼层", (-1.5, 0)),
-    ("列号", (5.5, 0)),
-    ("类型", (-1.5, -1.5)),
-    ("容量", (2, -1.5)),
-    ("当前占用数", (5.5, -1.5)),
-  )
+  // 属性节点 - 主键
+  node((0, -2), text(size: 9pt)[#underline[货架ID]], stroke: 1pt, shape: ellipse, inset: 6pt, name: <id>),
 
-  for (name, pos) in attrs {
-    circle(pos, radius: 0.8, stroke: 1pt)
-    content(pos, text(size: 9pt)[#name])
-    line((2, 1), pos, stroke: 0.5pt)
-  }
+  // 属性节点 - 普通属性
+  node((-2, -1), text(size: 9pt)[货架编号], stroke: 1pt, shape: ellipse, inset: 6pt, name: <code>),
+  node((2, -1), text(size: 9pt)[区域], stroke: 1pt, shape: ellipse, inset: 6pt, name: <area>),
+  node((-2.5, 0), text(size: 9pt)[楼层], stroke: 1pt, shape: ellipse, inset: 6pt, name: <floor>),
+  node((2.5, 0), text(size: 9pt)[列号], stroke: 1pt, shape: ellipse, inset: 6pt, name: <column>),
+  node((-2, 1), text(size: 9pt)[类型], stroke: 1pt, shape: ellipse, inset: 6pt, name: <type>),
+  node((2, 1), text(size: 9pt)[当前占用数], stroke: 1pt, shape: ellipse, inset: 6pt, name: <current>),
+  node((0, 2), text(size: 9pt)[容量], stroke: 1pt, shape: ellipse, inset: 6pt, name: <capacity>),
 
-  // 主键标记（下划线）
-  line((1.5, 3), (2.5, 3), stroke: 1pt)
-})
+  // 连接线
+  edge(<entity>, <id>),
+  edge(<entity>, <code>),
+  edge(<entity>, <area>),
+  edge(<entity>, <floor>),
+  edge(<entity>, <column>),
+  edge(<entity>, <type>),
+  edge(<entity>, <current>),
+  edge(<entity>, <capacity>),
+)

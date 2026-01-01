@@ -50,3 +50,35 @@ type ShelfStatistics struct {
 		UtilizationRate float64 `json:"utilization_rate"`
 	} `json:"by_type"`
 }
+
+// ========== 响应结构 ==========
+
+// CreateShelfResponse 创建货架响应
+type CreateShelfResponse struct {
+	Response
+	Data ShelfInfo `json:"data"`
+}
+
+// UpdateShelfResponse 更新货架响应
+type UpdateShelfResponse struct {
+	Response
+	Data ShelfInfo `json:"data"`
+}
+
+// ShelfDetailResponse 货架详情响应
+type ShelfDetailResponse struct {
+	Response
+	Data ShelfInfo `json:"data"`
+}
+
+// ShelfListResponse 货架列表响应
+type ShelfListResponse struct {
+	Response
+	Data ShelfListData `json:"data"`
+}
+
+// ShelfStatisticsResponse 货架统计响应
+type ShelfStatisticsResponse struct {
+	Response
+	Data ShelfStatistics `json:"data"`
+}

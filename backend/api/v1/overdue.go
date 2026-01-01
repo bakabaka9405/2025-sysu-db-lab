@@ -45,3 +45,34 @@ type BatchResult struct {
 type BatchReturnRequest struct {
 	IDs []int64 `json:"ids" binding:"required"`
 }
+
+// CheckOverdueData 检查滞留件响应数据
+type CheckOverdueData struct {
+	MarkedCount int `json:"marked_count"`
+}
+
+// ========== 响应结构 ==========
+
+// OverdueListResponse 滞留件列表响应
+type OverdueListResponse struct {
+	Response
+	Data OverdueListData `json:"data"`
+}
+
+// OverdueDetailResponse 滞留件详情响应
+type OverdueDetailResponse struct {
+	Response
+	Data OverdueInfo `json:"data"`
+}
+
+// BatchReturnResponse 批量退回响应
+type BatchReturnResponse struct {
+	Response
+	Data BatchResult `json:"data"`
+}
+
+// CheckOverdueResponse 检查滞留件响应
+type CheckOverdueResponse struct {
+	Response
+	Data CheckOverdueData `json:"data"`
+}

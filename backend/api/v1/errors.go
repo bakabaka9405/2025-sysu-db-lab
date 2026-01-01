@@ -9,6 +9,9 @@ var (
 	ErrNotFound            = newError(404, "Not Found")
 	ErrInternalServerError = newError(500, "Internal Server Error")
 
-	// more biz errors
-	ErrEmailAlreadyUse = newError(1001, "The email is already in use.")
+	// user biz errors
+	ErrUsernameExists     = newError(1002, "用户名已存在")
+	ErrPhoneExists        = newError(1003, "手机号已被注册")
+	ErrEmailExists        = newError(1004, "邮箱已被注册")
+	ErrInvalidCredentials = newError(1005, "用户名或密码错误")
 )

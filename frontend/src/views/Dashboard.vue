@@ -38,8 +38,6 @@ const isStaffOrAdmin = computed(() => {
 
 // 包裹状态映射
 const parcelStatusMap: Record<string, string> = {
-  received: '已接收',
-  shelved: '已上架',
   ready_for_pickup: '待取件',
   picked_up: '已取件',
   overdue: '滞留',

@@ -2,13 +2,14 @@ package service
 
 import (
 	"context"
-	"fmt"
-	"regexp"
 	v1 "backend/api/v1"
 	"backend/internal/model"
 	"backend/internal/repository"
-	"golang.org/x/crypto/bcrypt"
+	"fmt"
+	"regexp"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService interface {
@@ -40,7 +41,7 @@ func (s *userService) Register(ctx context.Context, req *v1.RegisterRequest) err
 		return v1.ErrInternalServerError
 	}
 	if existUser != nil {
-		return fmt.Errorf("用户名已存在")
+		return v1.ErrUsernameExists
 	}
 
 	// 检查手机号是否已存在
@@ -49,7 +50,7 @@ func (s *userService) Register(ctx context.Context, req *v1.RegisterRequest) err
 		return v1.ErrInternalServerError
 	}
 	if existUser != nil {
-		return fmt.Errorf("手机号已被注册")
+		return v1.ErrPhoneExists
 	}
 
 	// 如果提供了邮箱，检查是否已存在
@@ -59,7 +60,7 @@ func (s *userService) Register(ctx context.Context, req *v1.RegisterRequest) err
 			return v1.ErrInternalServerError
 		}
 		if existUser != nil {
-			return fmt.Errorf("邮箱已被注册")
+			return v1.ErrEmailExists
 		}
 	}
 

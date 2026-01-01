@@ -110,23 +110,18 @@ const columns: DataTableColumns<Shipment> = [
 // 加载数据
 const loadData = async () => {
   loading.value = true
-  try {
-    const res = await getMyShipments({
-      page: page.value,
-      page_size: pageSize.value
-    })
+  const res = await getMyShipments({
+    page: page.value,
+    page_size: pageSize.value
+  })
 
-    if (res.code === 0 && res.data) {
-      shipments.value = res.data.list
-      total.value = res.data.pagination.total
-    } else {
-      message.error(res.message || '加载失败')
-    }
-  } catch (error: any) {
-    message.error(error.message || '加载失败')
-  } finally {
-    loading.value = false
+  if (res.code === 0 && res.data) {
+    shipments.value = res.data.list
+    total.value = res.data.pagination.total
+  } else {
+    message.error(res.message || '加载失败')
   }
+  loading.value = false
 }
 
 // 加载快递公司列表
@@ -200,20 +195,15 @@ const handleSubmit = async () => {
   }
 
   createLoading.value = true
-  try {
-    const res = await createShipment(formValue.value)
-    if (res.code === 0) {
-      message.success('创建成功')
-      showCreateModal.value = false
-      loadData()
-    } else {
-      message.error(res.message || '创建失败')
-    }
-  } catch (error: any) {
-    message.error(error.message || '创建失败')
-  } finally {
-    createLoading.value = false
+  const res = await createShipment(formValue.value)
+  if (res.code === 0) {
+    message.success('创建成功')
+    showCreateModal.value = false
+    loadData()
+  } else {
+    message.error(res.message || '创建失败')
   }
+  createLoading.value = false
 }
 
 // 处理分页变化

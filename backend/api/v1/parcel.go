@@ -102,3 +102,35 @@ type DashboardStatistics struct {
 		PickedUp  int    `json:"picked_up"`
 	} `json:"recent_trends"`
 }
+
+// ========== 响应结构 ==========
+
+// ReceiveParcelResponse 包裹入库响应
+type ReceiveParcelResponse struct {
+	Response
+	Data ParcelInfo `json:"data"`
+}
+
+// PickupParcelResponse 包裹取件响应
+type PickupParcelResponse struct {
+	Response
+	Data ParcelInfo `json:"data"`
+}
+
+// ParcelDetailResponse 包裹详情响应
+type ParcelDetailResponse struct {
+	Response
+	Data ParcelInfo `json:"data"`
+}
+
+// ParcelListResponse 包裹列表响应
+type ParcelListResponse struct {
+	Response
+	Data ParcelListData `json:"data"`
+}
+
+// DashboardStatisticsResponse 仪表盘统计响应
+type DashboardStatisticsResponse struct {
+	Response
+	Data DashboardStatistics `json:"data"`
+}

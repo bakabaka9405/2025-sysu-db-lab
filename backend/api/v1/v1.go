@@ -27,10 +27,12 @@ func HandleError(ctx *gin.Context, httpCode int, err error, data interface{}) {
 	if data == nil {
 		data = map[string]string{}
 	}
-	resp := Response{Code: errorCodeMap[err], Message: err.Error(), Data: data}
-	if _, ok := errorCodeMap[err]; !ok {
-		resp = Response{Code: 500, Message: "unknown error", Data: data}
+	code, ok := errorCodeMap[err]
+	if !ok {
+		// 未注册的错误使用 HTTP 状态码作为 code，并透传原始错误消息
+		code = httpCode
 	}
+	resp := Response{Code: code, Message: err.Error(), Data: data}
 	ctx.JSON(httpCode, resp)
 }
 

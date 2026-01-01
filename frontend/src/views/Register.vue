@@ -115,27 +115,28 @@ const handleRegister = async () => {
     return
   }
 
-  try {
-    registerLoading.value = true
-    await register({
-      username: formValue.value.username,
-      password: formValue.value.password,
-      realName: formValue.value.realName,
-      phone: formValue.value.phone,
-      idCard: formValue.value.idCard || undefined,
-      email: formValue.value.email || undefined
-    })
+  registerLoading.value = true
+  const res = await register({
+    username: formValue.value.username,
+    password: formValue.value.password,
+    realName: formValue.value.realName,
+    phone: formValue.value.phone,
+    idCard: formValue.value.idCard || undefined,
+    email: formValue.value.email || undefined
+  })
+
+  if (res.code === 0) {
     message.success('注册成功，即将跳转到登录页')
     setTimeout(() => {
       router.push('/login')
     }, 1500)
-  } catch (error: any) {
-    message.error(error.response?.data?.message || '注册失败，请重试')
-  } finally {
-    setTimeout(() => {
-      registerLoading.value = false
-    }, 1000)
+  } else {
+    message.error(res.message || '注册失败，请重试')
   }
+
+  setTimeout(() => {
+    registerLoading.value = false
+  }, 1000)
 }
 </script>
 

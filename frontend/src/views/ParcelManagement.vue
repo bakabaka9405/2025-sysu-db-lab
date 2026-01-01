@@ -60,8 +60,6 @@ const pickupForm = ref<PickupParcelRequest>({
 // 状态选项
 const statusOptions = [
   { label: '全部', value: '' },
-  { label: '已接收', value: 'received' },
-  { label: '已上架', value: 'shelved' },
   { label: '待取件', value: 'ready_for_pickup' },
   { label: '已取件', value: 'picked_up' },
   { label: '滞留', value: 'overdue' },
@@ -80,8 +78,6 @@ const courierOptions = COURIER_COMPANIES.map(c => ({ label: c, value: c }))
 
 // 包裹状态映射
 const parcelStatusMap: Record<string, { text: string; type: any }> = {
-  received: { text: '已接收', type: 'info' },
-  shelved: { text: '已上架', type: 'info' },
   ready_for_pickup: { text: '待取件', type: 'success' },
   picked_up: { text: '已取件', type: 'default' },
   overdue: { text: '滞留', type: 'warning' },
@@ -149,24 +145,19 @@ const columns: DataTableColumns<Parcel> = [
 // 加载包裹列表
 const loadParcels = async () => {
   loading.value = true
-  try {
-    const res = await getParcelList({
-      status: statusFilter.value || undefined,
-      page: page.value,
-      page_size: pageSize.value
-    })
+  const res = await getParcelList({
+    status: statusFilter.value || undefined,
+    page: page.value,
+    page_size: pageSize.value
+  })
 
-    if (res.code === 0 && res.data) {
-      parcels.value = res.data.list
-      total.value = res.data.pagination.total
-    } else {
-      message.error(res.message || '加载失败')
-    }
-  } catch (error: any) {
-    message.error(error.message || '加载失败')
-  } finally {
-    loading.value = false
+  if (res.code === 0 && res.data) {
+    parcels.value = res.data.list
+    total.value = res.data.pagination.total
+  } else {
+    message.error(res.message || '加载失败')
   }
+  loading.value = false
 }
 
 // 打开入库弹窗
@@ -207,20 +198,15 @@ const handleSubmitReceive = async () => {
   }
 
   receiveLoading.value = true
-  try {
-    const res = await receiveParcel(receiveForm.value)
-    if (res.code === 0) {
-      message.success(`入库成功！取件码：${res.data?.pickup_code}`)
-      showReceiveModal.value = false
-      loadParcels()
-    } else {
-      message.error(res.message || '入库失败')
-    }
-  } catch (error: any) {
-    message.error(error.message || '入库失败')
-  } finally {
-    receiveLoading.value = false
+  const res = await receiveParcel(receiveForm.value)
+  if (res.code === 0) {
+    message.success(`入库成功！取件码：${res.data?.pickup_code}`)
+    showReceiveModal.value = false
+    loadParcels()
+  } else {
+    message.error(res.message || '入库失败')
   }
+  receiveLoading.value = false
 }
 
 // 打开取件弹窗
@@ -247,20 +233,15 @@ const handleSubmitPickup = async () => {
   }
 
   pickupLoading.value = true
-  try {
-    const res = await pickupParcel(pickupForm.value)
-    if (res.code === 0) {
-      message.success('取件成功')
-      showPickupModal.value = false
-      loadParcels()
-    } else {
-      message.error(res.message || '取件失败')
-    }
-  } catch (error: any) {
-    message.error(error.message || '取件失败')
-  } finally {
-    pickupLoading.value = false
+  const res = await pickupParcel(pickupForm.value)
+  if (res.code === 0) {
+    message.success('取件成功')
+    showPickupModal.value = false
+    loadParcels()
+  } else {
+    message.error(res.message || '取件失败')
   }
+  pickupLoading.value = false
 }
 
 // 处理分页变化

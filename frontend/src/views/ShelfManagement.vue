@@ -121,14 +121,14 @@ const columns: DataTableColumns<Shelf> = [
     title: '容量',
     key: 'capacity',
     width: 80,
-    render: (row) => `${row.current_count}/${row.capacity}`
+    render: (row) => `${row.current_count ?? 0}/${row.capacity}`
   },
   {
     title: '使用率',
     key: 'utilization',
     width: 120,
     render: (row) => {
-      const rate = Math.round((row.current_count / row.capacity) * 100)
+      const rate = Math.round(((row.current_count ?? 0) / row.capacity) * 100)
       return h(NProgress, {
         type: 'line',
         percentage: rate,
@@ -142,7 +142,7 @@ const columns: DataTableColumns<Shelf> = [
     key: 'status',
     width: 80,
     render: (row) => {
-      const status = statusMap[row.status] || { text: row.status, type: 'default' }
+      const status = statusMap[row.status ?? 'active'] || { text: row.status ?? '未知', type: 'default' }
       return h(NTag, { type: status.type }, { default: () => status.text })
     }
   },
@@ -169,26 +169,21 @@ const columns: DataTableColumns<Shelf> = [
 // 加载货架列表
 const loadShelves = async () => {
   loading.value = true
-  try {
-    const res = await getShelfList({
-      area: areaFilter.value || undefined,
-      type: typeFilter.value || undefined,
-      status: statusFilter.value || undefined,
-      page: page.value,
-      page_size: pageSize.value
-    })
+  const res = await getShelfList({
+    area: areaFilter.value || undefined,
+    type: typeFilter.value || undefined,
+    status: statusFilter.value || undefined,
+    page: page.value,
+    page_size: pageSize.value
+  })
 
-    if (res.code === 0 && res.data) {
-      shelves.value = res.data.list
-      total.value = res.data.pagination.total
-    } else {
-      message.error(res.message || '加载失败')
-    }
-  } catch (error: any) {
-    message.error(error.message || '加载失败')
-  } finally {
-    loading.value = false
+  if (res.code === 0 && res.data) {
+    shelves.value = res.data.list
+    total.value = res.data.pagination.total
+  } else {
+    message.error(res.message || '加载失败')
   }
+  loading.value = false
 }
 
 // 加载统计数据
@@ -237,53 +232,48 @@ const handleSubmit = async () => {
   if (modalLoading.value) return
 
   modalLoading.value = true
-  try {
-    if (modalMode.value === 'create') {
-      if (!formData.value.shelf_code || !formData.value.area) {
-        message.error('请填写完整信息')
-        return
-      }
-      const res = await createShelf(formData.value)
-      if (res.code === 0) {
-        message.success('创建成功')
-        showModal.value = false
-        loadShelves()
-        loadStatistics()
-      } else {
-        message.error(res.message || '创建失败')
-      }
-    } else {
-      if (!editingId.value) return
-      const res = await updateShelf(editingId.value, editFormData.value)
-      if (res.code === 0) {
-        message.success('更新成功')
-        showModal.value = false
-        loadShelves()
-        loadStatistics()
-      } else {
-        message.error(res.message || '更新失败')
-      }
+  if (modalMode.value === 'create') {
+    if (!formData.value.shelf_code || !formData.value.area) {
+      message.error('请填写完整信息')
+      modalLoading.value = false
+      return
     }
-  } catch (error: any) {
-    message.error(error.message || '操作失败')
-  } finally {
-    modalLoading.value = false
+    const res = await createShelf(formData.value)
+    if (res.code === 0) {
+      message.success('创建成功')
+      showModal.value = false
+      loadShelves()
+      loadStatistics()
+    } else {
+      message.error(res.message || '创建失败')
+    }
+  } else {
+    if (!editingId.value) {
+      modalLoading.value = false
+      return
+    }
+    const res = await updateShelf(editingId.value, editFormData.value)
+    if (res.code === 0) {
+      message.success('更新成功')
+      showModal.value = false
+      loadShelves()
+      loadStatistics()
+    } else {
+      message.error(res.message || '更新失败')
+    }
   }
+  modalLoading.value = false
 }
 
 // 删除货架
 const handleDelete = async (shelf: Shelf) => {
-  try {
-    const res = await deleteShelf(shelf.id)
-    if (res.code === 0) {
-      message.success('删除成功')
-      loadShelves()
-      loadStatistics()
-    } else {
-      message.error(res.message || '删除失败')
-    }
-  } catch (error: any) {
-    message.error(error.message || '删除失败')
+  const res = await deleteShelf(shelf.id)
+  if (res.code === 0) {
+    message.success('删除成功')
+    loadShelves()
+    loadStatistics()
+  } else {
+    message.error(res.message || '删除失败')
   }
 }
 

@@ -18,23 +18,6 @@ export const getMyShipments = async (params?: {
 }): Promise<ApiResponse<ShipmentListResponse>> => {
   try {
     const response: any = await request.get('/my-shipments', { params });
-
-    // 转换后端字段名到前端格式
-    if (response.code === 0 && response.data) {
-      response.data.list = response.data.list.map((item: any) => ({
-        ...item,
-        shipmentNumber: item.shipment_number,
-        senderName: item.sender_name,
-        senderPhone: item.sender_phone,
-        recipientName: item.recipient_name,
-        recipientPhone: item.recipient_phone,
-        recipientAddress: item.recipient_address,
-        courierCompany: item.courier_company,
-        createdAt: item.created_at,
-        shippedAt: item.shipped_at
-      }));
-    }
-
     return response;
   } catch (error: any) {
     return {
@@ -53,23 +36,6 @@ export const createShipment = async (
 ): Promise<ApiResponse<Shipment>> => {
   try {
     const response: any = await request.post('/shipments', data);
-
-    // 转换后端字段名到前端格式
-    if (response.code === 0 && response.data) {
-      response.data = {
-        ...response.data,
-        shipmentNumber: response.data.shipment_number,
-        senderName: response.data.sender_name,
-        senderPhone: response.data.sender_phone,
-        recipientName: response.data.recipient_name,
-        recipientPhone: response.data.recipient_phone,
-        recipientAddress: response.data.recipient_address,
-        courierCompany: response.data.courier_company,
-        createdAt: response.data.created_at,
-        shippedAt: response.data.shipped_at
-      };
-    }
-
     return response;
   } catch (error: any) {
     return {
@@ -86,23 +52,6 @@ export const createShipment = async (
 export const getShipmentDetail = async (id: number): Promise<ApiResponse<Shipment>> => {
   try {
     const response: any = await request.get(`/shipments/${id}`);
-
-    // 转换后端字段名到前端格式
-    if (response.code === 0 && response.data) {
-      response.data = {
-        ...response.data,
-        shipmentNumber: response.data.shipment_number,
-        senderName: response.data.sender_name,
-        senderPhone: response.data.sender_phone,
-        recipientName: response.data.recipient_name,
-        recipientPhone: response.data.recipient_phone,
-        recipientAddress: response.data.recipient_address,
-        courierCompany: response.data.courier_company,
-        createdAt: response.data.created_at,
-        shippedAt: response.data.shipped_at
-      };
-    }
-
     return response;
   } catch (error: any) {
     return {

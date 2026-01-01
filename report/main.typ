@@ -44,7 +44,7 @@
 
 // 段落样式
 #set par(
-  first-line-indent: (amount: 2em, all: true),
+  first-line-indent: 2em,
   justify: true,
   leading: 1em,
 )

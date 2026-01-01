@@ -41,22 +41,17 @@ const roleMap: Record<string, { text: string; type: any }> = {
 // 加载用户信息
 const loadProfile = async () => {
   loading.value = true
-  try {
-    const res = await getProfile()
-    if (res.code === 0 && res.data) {
-      profile.value = res.data
-      formValue.value = {
-        realName: res.data.realName,
-        email: res.data.email || ''
-      }
-    } else {
-      message.error(res.message || '加载失败')
+  const res = await getProfile()
+  if (res.code === 0 && res.data) {
+    profile.value = res.data
+    formValue.value = {
+      realName: res.data.realName,
+      email: res.data.email || ''
     }
-  } catch (error: any) {
-    message.error(error.message || '加载失败')
-  } finally {
-    loading.value = false
+  } else {
+    message.error(res.message || '加载失败')
   }
+  loading.value = false
 }
 
 // 进入编辑模式
@@ -85,26 +80,21 @@ const handleSave = async () => {
   }
 
   loading.value = true
-  try {
-    const res = await updateProfile(formValue.value)
-    if (res.code === 0) {
-      message.success('更新成功')
-      editMode.value = false
-      // 更新本地用户信息
-      if (profile.value) {
-        profile.value.realName = formValue.value.realName
-        profile.value.email = formValue.value.email
-        userStore.setUserInfo(profile.value)
-      }
-      loadProfile()
-    } else {
-      message.error(res.message || '更新失败')
+  const res = await updateProfile(formValue.value)
+  if (res.code === 0) {
+    message.success('更新成功')
+    editMode.value = false
+    // 更新本地用户信息
+    if (profile.value) {
+      profile.value.realName = formValue.value.realName
+      profile.value.email = formValue.value.email
+      userStore.setUserInfo(profile.value)
     }
-  } catch (error: any) {
-    message.error(error.message || '更新失败')
-  } finally {
-    loading.value = false
+    loadProfile()
+  } else {
+    message.error(res.message || '更新失败')
   }
+  loading.value = false
 }
 
 // 退出登录

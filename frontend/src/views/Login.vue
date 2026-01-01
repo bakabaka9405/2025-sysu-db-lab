@@ -50,27 +50,23 @@ const rules = {
 const handleLogin = async () => {
   if (loginLoading.value) return
 
-  try {
-    loginLoading.value = true
-    const res = await login(formValue.value)
+  loginLoading.value = true
+  const res = await login(formValue.value)
 
-    if (!res.data) {
-      throw new Error('未知错误');
-    }
-
+  if (res.code === 0 && res.data) {
     // 保存token和用户信息到store
     userStore.setToken(res.data.accessToken)
     userStore.setUserInfo(res.data.user)
 
     message.success('登录成功')
     router.push('/')
-  } catch (error: any) {
-    message.error(error.response?.data?.message || '用户名或密码错误')
-  } finally {
-    setTimeout(() => {
-      loginLoading.value = false
-    }, 1000)
+  } else {
+    message.error(res.message || '用户名或密码错误')
   }
+
+  setTimeout(() => {
+    loginLoading.value = false
+  }, 1000)
 }
 </script>
 

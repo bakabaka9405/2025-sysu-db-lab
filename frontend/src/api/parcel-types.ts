@@ -1,7 +1,5 @@
 // 包裹状态枚举
 export enum ParcelStatus {
-  RECEIVED = 'received', // 已接收
-  SHELVED = 'shelved', // 已上架
   READY_FOR_PICKUP = 'ready_for_pickup', // 待取件
   PICKED_UP = 'picked_up', // 已取件
   OVERDUE = 'overdue', // 滞留

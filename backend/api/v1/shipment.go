@@ -59,3 +59,35 @@ type ShipmentListData struct {
 	List       []ShipmentInfo `json:"list"`
 	Pagination Pagination     `json:"pagination"`
 }
+
+// ========== 响应结构 ==========
+
+// CalculateFreightResponse 运费计算响应
+type CalculateFreightResponse struct {
+	Response
+	Data CalculateFreightData `json:"data"`
+}
+
+// CreateShipmentResponse 创建寄件单响应
+type CreateShipmentResponse struct {
+	Response
+	Data ShipmentInfo `json:"data"`
+}
+
+// ShipmentDetailResponse 寄件单详情响应
+type ShipmentDetailResponse struct {
+	Response
+	Data ShipmentInfo `json:"data"`
+}
+
+// ShipmentListResponse 寄件单列表响应
+type ShipmentListResponse struct {
+	Response
+	Data ShipmentListData `json:"data"`
+}
+
+// CourierCompaniesResponse 快递公司列表响应
+type CourierCompaniesResponse struct {
+	Response
+	Data []string `json:"data"`
+}

@@ -35,8 +35,6 @@ const statusOptions = [
 
 // 包裹状态映射
 const parcelStatusMap: Record<string, { text: string; type: any }> = {
-  received: { text: '已接收', type: 'info' },
-  shelved: { text: '已上架', type: 'info' },
   ready_for_pickup: { text: '待取件', type: 'success' },
   picked_up: { text: '已取件', type: 'default' },
   overdue: { text: '滞留', type: 'warning' },
@@ -94,24 +92,19 @@ const columns: DataTableColumns<Parcel> = [
 // 加载数据
 const loadData = async () => {
   loading.value = true
-  try {
-    const res = await getMyParcels({
-      status: statusFilter.value || undefined,
-      page: page.value,
-      page_size: pageSize.value
-    })
+  const res = await getMyParcels({
+    status: statusFilter.value || undefined,
+    page: page.value,
+    page_size: pageSize.value
+  })
 
-    if (res.code === 0 && res.data) {
-      parcels.value = res.data.list
-      total.value = res.data.pagination.total
-    } else {
-      message.error(res.message || '加载失败')
-    }
-  } catch (error: any) {
-    message.error(error.message || '加载失败')
-  } finally {
-    loading.value = false
+  if (res.code === 0 && res.data) {
+    parcels.value = res.data.list
+    total.value = res.data.pagination.total
+  } else {
+    message.error(res.message || '加载失败')
   }
+  loading.value = false
 }
 
 // 处理分页变化
