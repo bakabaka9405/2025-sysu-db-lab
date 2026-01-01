@@ -23,7 +23,10 @@ jobs:
         run: cd frontend && bun install --frozen-lockfile
 
       - name: Build project
-        run: cd frontend && bun run build
+        run: |
+          cd frontend
+          echo "VITE_API_BASE_URL=${{ vars.VITE_API_BASE_URL }}" > .env
+          bun run build
 
       - name: Push to build branch
         uses: peaceiris/actions-gh-pages@v3
