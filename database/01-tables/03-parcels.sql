@@ -11,7 +11,7 @@ CREATE TABLE parcels (
     courier_company VARCHAR(50) NOT NULL,
     size VARCHAR(20) NOT NULL,
     weight DECIMAL(10, 2),
-    status VARCHAR(20) NOT NULL DEFAULT 'ready_for_pickup',
+    status VARCHAR(20) NOT NULL DEFAULT 'received',
     shelf_id BIGINT REFERENCES shelves(id) ON DELETE SET NULL,
     received_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     shelved_at TIMESTAMPTZ,
@@ -28,7 +28,7 @@ CREATE TABLE parcels (
     ),
     CONSTRAINT chk_weight_positive CHECK (weight IS NULL OR weight > 0),
     CONSTRAINT chk_status_valid CHECK (status IN (
-        'ready_for_pickup', 'picked_up', 'overdue', 'returned'
+        'received', 'ready', 'picked_up', 'overdue', 'returned'
     )),
     CONSTRAINT chk_pickup_code_format CHECK (
         pickup_code ~ '^[A-Z][0-9A-Z]{5}$'

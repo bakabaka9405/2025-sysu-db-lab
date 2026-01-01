@@ -122,7 +122,7 @@ BEGIN
     UPDATE shelves SET current_count = (
         SELECT COUNT(*) FROM parcels
         WHERE shelf_id = shelves.id
-        AND status IN ('received', 'shelved', 'ready_for_pickup', 'overdue')
+        AND status IN ('received', 'shelved', 'ready', 'overdue')
         AND deleted_at IS NULL
     );
 END $$;

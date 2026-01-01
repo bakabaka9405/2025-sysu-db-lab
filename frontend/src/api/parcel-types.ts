@@ -1,6 +1,7 @@
 // 包裹状态枚举
 export enum ParcelStatus {
-  READY_FOR_PICKUP = 'ready_for_pickup', // 待取件
+  RECEIVED = 'received', // 已入库（待上架）
+  READY_FOR_PICKUP = 'ready', // 已上架/待取件
   PICKED_UP = 'picked_up', // 已取件
   OVERDUE = 'overdue', // 滞留
   RETURNED = 'returned' // 已退回
@@ -146,7 +147,7 @@ export interface DashboardStatistics {
     total: number
     received: number
     shelved: number
-    ready_for_pickup: number
+    ready: number
     picked_up: number
     overdue: number
     returned: number

@@ -34,7 +34,8 @@ const verifyPhone = ref('')
 
 // 包裹状态映射
 const parcelStatusMap: Record<string, { text: string; type: any }> = {
-  ready_for_pickup: { text: '待取件', type: 'success' },
+  received: { text: '待上架', type: 'info' },
+  ready: { text: '待取件', type: 'success' },
   picked_up: { text: '已取件', type: 'default' },
   overdue: { text: '滞留', type: 'warning' },
   returned: { text: '已退回', type: 'error' }
@@ -43,7 +44,7 @@ const parcelStatusMap: Record<string, { text: string; type: any }> = {
 // 是否可以取件
 const canPickup = () => {
   return searchResult.value &&
-    (searchResult.value.status === 'ready_for_pickup' || searchResult.value.status === 'overdue')
+    (searchResult.value.status === 'ready' || searchResult.value.status === 'overdue')
 }
 
 // 打开取件弹窗
@@ -147,21 +148,11 @@ const formatDateTime = (dateStr?: string) => {
         <NTabPane name="pickup_code" tab="取件码查询">
           <NForm label-placement="top">
             <NFormItem label="取件码">
-              <NInput
-                v-model:value="pickupCode"
-                placeholder="请输入取件码，例如：A12345"
-                size="large"
-                @keyup.enter="handleSearch"
-              />
+              <NInput v-model:value="pickupCode" placeholder="请输入取件码，例如：A12345" size="large"
+                @keyup.enter="handleSearch" />
             </NFormItem>
             <NFormItem>
-              <NButton
-                type="primary"
-                size="large"
-                block
-                :loading="loading"
-                @click="handleSearch"
-              >
+              <NButton type="primary" size="large" block :loading="loading" @click="handleSearch">
                 查询
               </NButton>
             </NFormItem>
@@ -171,21 +162,11 @@ const formatDateTime = (dateStr?: string) => {
         <NTabPane name="tracking_number" tab="快递单号查询">
           <NForm label-placement="top">
             <NFormItem label="快递单号">
-              <NInput
-                v-model:value="trackingNumber"
-                placeholder="请输入快递单号，例如：SF1234567890"
-                size="large"
-                @keyup.enter="handleSearch"
-              />
+              <NInput v-model:value="trackingNumber" placeholder="请输入快递单号，例如：SF1234567890" size="large"
+                @keyup.enter="handleSearch" />
             </NFormItem>
             <NFormItem>
-              <NButton
-                type="primary"
-                size="large"
-                block
-                :loading="loading"
-                @click="handleSearch"
-              >
+              <NButton type="primary" size="large" block :loading="loading" @click="handleSearch">
                 查询
               </NButton>
             </NFormItem>
@@ -195,11 +176,7 @@ const formatDateTime = (dateStr?: string) => {
 
       <!-- 查询结果 -->
       <div v-if="searchResult" class="result-section">
-        <NDescriptions
-          label-placement="left"
-          :column="1"
-          bordered
-        >
+        <NDescriptions label-placement="left" :column="1" bordered>
           <NDescriptionsItem label="取件码">
             <strong style="font-size: 20px; color: #18a058;">{{ searchResult.pickup_code }}</strong>
           </NDescriptionsItem>
@@ -227,7 +204,8 @@ const formatDateTime = (dateStr?: string) => {
             </NTag>
           </NDescriptionsItem>
           <NDescriptionsItem v-if="searchResult.shelf" label="货架位置">
-            {{ searchResult.shelf.shelf_code }} ({{ searchResult.shelf.area }}区{{ searchResult.shelf.floor }}层{{ searchResult.shelf.column }}列)
+            {{ searchResult.shelf.shelf_code }} ({{ searchResult.shelf.area }}区{{ searchResult.shelf.floor }}层{{
+              searchResult.shelf.column }}列)
           </NDescriptionsItem>
           <NDescriptionsItem label="入库时间">
             {{ formatDateTime(searchResult.received_at) }}
@@ -253,11 +231,7 @@ const formatDateTime = (dateStr?: string) => {
 
       <!-- 错误提示 -->
       <div v-else-if="searchError" class="result-section">
-        <NResult
-          status="404"
-          title="未找到包裹"
-          :description="searchError"
-        >
+        <NResult status="404" title="未找到包裹" :description="searchError">
           <template #footer>
             <NButton @click="handleReset">重新查询</NButton>
           </template>

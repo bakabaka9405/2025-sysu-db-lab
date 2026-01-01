@@ -15,7 +15,7 @@ SELECT
 
     -- 待取件数量
     (SELECT COUNT(*) FROM parcels
-     WHERE status IN ('received', 'shelved', 'ready_for_pickup') AND deleted_at IS NULL) as pending_pickup,
+     WHERE status IN ('received', 'shelved', 'ready') AND deleted_at IS NULL) as pending_pickup,
 
     -- 货架统计
     (SELECT SUM(capacity) FROM shelves WHERE deleted_at IS NULL AND status = 'active') as total_capacity,

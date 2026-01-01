@@ -1381,7 +1381,7 @@ const docTemplate = `{
                         "picked_up": {
                             "type": "integer"
                         },
-                        "ready_for_pickup": {
+                        "ready": {
                             "type": "integer"
                         },
                         "received": {

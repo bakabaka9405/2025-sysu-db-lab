@@ -35,9 +35,9 @@ export const MOCK_SHELVES: Shelf[] = Array.from({ length: 50 }, (_, i) => ({
 
 // 生成随机包裹数据
 const generateMockParcels = (): Parcel[] => {
+  // 状态流转: received(入库) -> ready(上架/待取) -> picked_up(已取) / overdue(滞留) -> returned(退回)
   const statuses: ParcelStatus[] = [
     ParcelStatus.RECEIVED,
-    ParcelStatus.SHELVED,
     ParcelStatus.READY_FOR_PICKUP,
     ParcelStatus.PICKED_UP,
     ParcelStatus.OVERDUE
@@ -51,6 +51,9 @@ const generateMockParcels = (): Parcel[] => {
     const status = statuses[Math.floor(Math.random() * statuses.length)]
     const receivedAt = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000)
 
+    // received状态没有货架，其他有（除了picked_up）
+    const hasShelf = status !== ParcelStatus.RECEIVED && status !== ParcelStatus.PICKED_UP
+
     return {
       id: i + 1,
       tracking_number: `SF${String(1234567890 + i).padStart(12, '0')}`,
@@ -61,7 +64,7 @@ const generateMockParcels = (): Parcel[] => {
       size: sizes[i % 3],
       weight: parseFloat((Math.random() * 10 + 0.5).toFixed(2)),
       status,
-      shelf: status !== ParcelStatus.PICKED_UP ? MOCK_SHELVES[i % 50] : undefined,
+      shelf: hasShelf ? MOCK_SHELVES[i % 50] : undefined,
       received_at: receivedAt.toISOString(),
       shelved_at:
         status !== ParcelStatus.RECEIVED
@@ -71,7 +74,9 @@ const generateMockParcels = (): Parcel[] => {
         status === ParcelStatus.PICKED_UP
           ? new Date(receivedAt.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString()
           : undefined,
-      expected_overdue_at: new Date(receivedAt.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+      expected_overdue_at: status !== ParcelStatus.RECEIVED 
+          ? new Date(receivedAt.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString()
+          : undefined,
       notes: i % 5 === 0 ? '易碎品，请小心搬运' : undefined
     }
   })
@@ -135,7 +140,7 @@ export const MOCK_DASHBOARD_STATISTICS: DashboardStatistics = {
     total: 1000,
     received: 100,
     shelved: 50,
-    ready_for_pickup: 300,
+    ready: 300,
     picked_up: 500,
     overdue: 30,
     returned: 20

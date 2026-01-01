@@ -8,7 +8,7 @@ ON parcels(pickup_code) WHERE deleted_at IS NULL;
 -- 只索引待取件的包裹（工作人员常用查询）
 CREATE INDEX idx_parcels_pending_pickup
 ON parcels(received_at DESC)
-WHERE status IN ('ready_for_pickup', 'shelved')
+WHERE status IN ('ready', 'shelved')
   AND deleted_at IS NULL;
 
 -- 只索引滞留包裹

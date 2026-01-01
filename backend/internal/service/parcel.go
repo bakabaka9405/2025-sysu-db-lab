@@ -14,6 +14,7 @@ import (
 
 type ParcelService interface {
 	ReceiveParcel(ctx context.Context, req *v1.ReceiveParcelRequest) (*model.Parcel, error)
+	ShelveParcel(ctx context.Context, id int64) (*model.Parcel, error)
 	PickupParcel(ctx context.Context, req *v1.PickupParcelRequest) (*model.Parcel, error)
 	GetParcelByPickupCode(ctx context.Context, pickupCode string) (*model.Parcel, error)
 	GetParcelByTrackingNumber(ctx context.Context, trackingNumber string) (*model.Parcel, error)
@@ -46,33 +47,58 @@ func (s *parcelService) ReceiveParcel(ctx context.Context, req *v1.ReceiveParcel
 		return nil, errors.New("快递单号已存在")
 	}
 
-	var parcel *model.Parcel
-	err := s.tm.Transaction(ctx, func(ctx context.Context) error {
-		shelfType := model.ShelfType(req.Size)
+	// 入库时只记录包裹信息，状态为 received，不分配货架
+	parcel := &model.Parcel{
+		TrackingNumber:  req.TrackingNumber,
+		PickupCode:      generatePickupCode(),
+		RecipientName:   req.RecipientName,
+		RecipientPhone:  req.RecipientPhone,
+		RecipientIDCard: req.RecipientIDCard,
+		CourierCompany:  req.CourierCompany,
+		Size:            model.ParcelSize(req.Size),
+		Weight:          req.Weight,
+		Status:          model.ParcelStatusReceived,
+		ReceivedAt:      time.Now(),
+		Notes:           req.Notes,
+	}
+
+	if err := s.parcelRepo.Create(ctx, parcel); err != nil {
+		return nil, err
+	}
+
+	return s.parcelRepo.GetByID(ctx, parcel.ID)
+}
+
+// ShelveParcel 包裹上架
+func (s *parcelService) ShelveParcel(ctx context.Context, id int64) (*model.Parcel, error) {
+	parcel, err := s.parcelRepo.GetByID(ctx, id)
+	if err != nil {
+		return nil, errors.New("包裹不存在")
+	}
+
+	if parcel.Status != model.ParcelStatusReceived {
+		return nil, errors.New("只有已入库状态的包裹才能上架")
+	}
+
+	err = s.tm.Transaction(ctx, func(ctx context.Context) error {
+		// 分配货架
+		shelfType := model.ShelfType(parcel.Size)
 		shelf, err := s.shelfRepo.FindAvailableShelfByType(ctx, shelfType)
 		if err != nil {
 			return errors.New("暂无可用货架")
 		}
 
-		parcel = &model.Parcel{
-			TrackingNumber:   req.TrackingNumber,
-			PickupCode:       generatePickupCode(),
-			RecipientName:    req.RecipientName,
-			RecipientPhone:   req.RecipientPhone,
-			RecipientIDCard:  req.RecipientIDCard,
-			CourierCompany:   req.CourierCompany,
-			Size:             model.ParcelSize(req.Size),
-			Weight:           req.Weight,
-			Status:           model.ParcelStatusReadyForPickup,
-			ShelfID:          &shelf.ID,
-			ReceivedAt:       time.Now(),
-			Notes:            req.Notes,
-		}
+		// 更新包裹状态
+		now := time.Now()
+		parcel.Status = model.ParcelStatusReadyForPickup
+		parcel.ShelfID = &shelf.ID
+		parcel.ShelvedAt = &now
 
-		overdueTime := time.Now().Add(3 * 24 * time.Hour)
+		// 设置预计滞留时间（上架后3天）
+		overdueTime := now.Add(3 * 24 * time.Hour)
 		parcel.ExpectedOverdueAt = &overdueTime
 
-		if err := s.parcelRepo.Create(ctx, parcel); err != nil {
+		if err := s.parcelRepo.Update(ctx, parcel); err != nil {
 			return err
 		}
 
@@ -160,7 +186,7 @@ func (s *parcelService) GetParcelList(ctx context.Context, req *v1.ParcelListReq
 	}
 
 	return &v1.ParcelListData{
-		List:       convertParcelsToInfo(parcels),
+		List: convertParcelsToInfo(parcels),
 		Pagination: v1.Pagination{
 			Page:       req.Page,
 			PageSize:   req.PageSize,
@@ -184,7 +210,7 @@ func (s *parcelService) GetMyParcels(ctx context.Context, phone string, req *v1.
 	}
 
 	return &v1.ParcelListData{
-		List:       convertParcelsToInfo(parcels),
+		List: convertParcelsToInfo(parcels),
 		Pagination: v1.Pagination{
 			Page:       req.Page,
 			PageSize:   req.PageSize,
@@ -207,7 +233,6 @@ func (s *parcelService) GetDashboardStatistics(ctx context.Context) (*v1.Dashboa
 
 	statusCounts, _ := s.parcelRepo.CountByStatus(ctx)
 	stats.Parcels.Received = statusCounts[string(model.ParcelStatusReceived)]
-	stats.Parcels.Shelved = statusCounts[string(model.ParcelStatusShelved)]
 	stats.Parcels.ReadyForPickup = statusCounts[string(model.ParcelStatusReadyForPickup)]
 	stats.Parcels.PickedUp = statusCounts[string(model.ParcelStatusPickedUp)]
 	stats.Parcels.Overdue = statusCounts[string(model.ParcelStatusOverdue)]

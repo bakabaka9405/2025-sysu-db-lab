@@ -2,10 +2,12 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
-	"github.com/gin-gonic/gin"
 	v1 "backend/api/v1"
 	"backend/internal/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 type ParcelHandler struct {
@@ -23,7 +25,7 @@ func NewParcelHandler(handler *Handler, parcelService service.ParcelService) *Pa
 // ReceiveParcel godoc
 // @Summary 包裹入库
 // @Schemes
-// @Description 工作人员将包裹录入系统并上架
+// @Description 工作人员将包裹录入系统
 // @Tags 包裹管理
 // @Accept json
 // @Produce json
@@ -38,6 +40,33 @@ func (h *ParcelHandler) ReceiveParcel(ctx *gin.Context) {
 	}
 
 	parcel, err := h.parcelService.ReceiveParcel(ctx, &req)
+	if err != nil {
+		v1.HandleError(ctx, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	v1.HandleSuccess(ctx, service.ConvertParcelToInfo(parcel))
+}
+
+// ShelveParcel godoc
+// @Summary 包裹上架
+// @Schemes
+// @Description 工作人员将包裹上架到货架（状态从received变为ready_for_pickup）
+// @Tags 包裹管理
+// @Accept json
+// @Produce json
+// @Param id path int true "包裹ID"
+// @Success 200 {object} v1.Response{data=v1.ParcelInfo}
+// @Router /parcels/{id}/shelve [post]
+func (h *ParcelHandler) ShelveParcel(ctx *gin.Context) {
+	idStr := ctx.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
+		return
+	}
+
+	parcel, err := h.parcelService.ShelveParcel(ctx, id)
 	if err != nil {
 		v1.HandleError(ctx, http.StatusInternalServerError, err, nil)
 		return

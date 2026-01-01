@@ -2,3 +2,6 @@
 *.pdf
 tinymist.lock
 *.db
+CLAUDE.md
+AGENTS.md
+TARGET.md

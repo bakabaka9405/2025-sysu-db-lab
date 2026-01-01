@@ -28,14 +28,15 @@ const searchKeyword = ref('')
 // 包裹状态选项
 const statusOptions = [
   { label: '全部', value: '' },
-  { label: '待取件', value: 'ready_for_pickup' },
+  { label: '待取件', value: 'ready' },
   { label: '已取件', value: 'picked_up' },
   { label: '滞留', value: 'overdue' }
 ]
 
 // 包裹状态映射
 const parcelStatusMap: Record<string, { text: string; type: any }> = {
-  ready_for_pickup: { text: '待取件', type: 'success' },
+  received: { text: '待上架', type: 'info' },
+  ready: { text: '待取件', type: 'success' },
   picked_up: { text: '已取件', type: 'default' },
   overdue: { text: '滞留', type: 'warning' },
   returned: { text: '已退回', type: 'error' }

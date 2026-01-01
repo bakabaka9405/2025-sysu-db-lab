@@ -103,6 +103,22 @@ export const receiveParcel = async (
 };
 
 /**
+ * 包裹上架
+ */
+export const shelveParcel = async (id: number): Promise<ApiResponse<Parcel>> => {
+  try {
+    const response: any = await request.post(`/parcels/${id}/shelve`);
+    return response;
+  } catch (error: any) {
+    return {
+      code: error.response?.data?.code || 50000,
+      message: error.response?.data?.message || '上架失败',
+      data: undefined
+    };
+  }
+};
+
+/**
  * 包裹取件
  */
 export const pickupParcel = async (data: PickupParcelRequest): Promise<ApiResponse<Parcel>> => {
@@ -139,7 +155,7 @@ export const getDashboardStatistics = async (): Promise<
           total: response.data.parcels.total,
           received: response.data.parcels.received,
           shelved: response.data.parcels.shelved,
-          ready_for_pickup: response.data.parcels.ready_for_pickup,
+          ready: response.data.parcels.ready,
           picked_up: response.data.parcels.picked_up,
           overdue: response.data.parcels.overdue,
           returned: response.data.parcels.returned

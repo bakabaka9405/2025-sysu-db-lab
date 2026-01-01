@@ -10,7 +10,7 @@
   lang: "zh",
 )
 
-#show math.equation: set text(font: ("New Computer Modern Math", "New Computer Modern"))
+#show math.equation: set text(font: ("New Computer Modern Math", "New Computer Modern", "Source Han Serif SC"))
 #show raw: set text(font: (
   (name: "DejaVu Sans Mono", covers: "latin-in-cjk"),
   "Source Han Serif SC",
@@ -80,7 +80,7 @@
     #v(25pt)
     #field("学号", "")
     #v(25pt)
-    #field("日期", "2025 年 12 月 18 日")
+    #field("日期", "2026 年 1 月 1 日")
   ]
 ]
 

@@ -27,6 +27,7 @@ func InitParcelRouter(
 	)
 	{
 		staffRouter.POST("/parcels/receive", deps.ParcelHandler.ReceiveParcel)
+		staffRouter.POST("/parcels/:id/shelve", deps.ParcelHandler.ShelveParcel)
 	}
 
 	// Strict auth routes (require login)

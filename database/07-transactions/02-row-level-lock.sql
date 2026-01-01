@@ -33,7 +33,7 @@ BEGIN
         RAISE EXCEPTION 'Parcel already picked up';
     END IF;
 
-    IF v_parcel.status NOT IN ('received', 'shelved', 'ready_for_pickup') THEN
+    IF v_parcel.status NOT IN ('received', 'shelved', 'ready') THEN
         RAISE EXCEPTION 'Parcel cannot be picked up in current status: %', v_parcel.status;
     END IF;
 

@@ -20,6 +20,7 @@ import {
 import {
   getParcelList,
   receiveParcel,
+  shelveParcel,
   pickupParcel
 } from '../api/parcel'
 import { COURIER_COMPANIES } from '../api/mock-data'
@@ -60,7 +61,8 @@ const pickupForm = ref<PickupParcelRequest>({
 // 状态选项
 const statusOptions = [
   { label: '全部', value: '' },
-  { label: '待取件', value: 'ready_for_pickup' },
+  { label: '待上架', value: 'received' },
+  { label: '待取件', value: 'ready' },
   { label: '已取件', value: 'picked_up' },
   { label: '滞留', value: 'overdue' },
   { label: '已退回', value: 'returned' }
@@ -78,7 +80,8 @@ const courierOptions = COURIER_COMPANIES.map(c => ({ label: c, value: c }))
 
 // 包裹状态映射
 const parcelStatusMap: Record<string, { text: string; type: any }> = {
-  ready_for_pickup: { text: '待取件', type: 'success' },
+  received: { text: '待上架', type: 'info' },
+  ready: { text: '待取件', type: 'success' },
   picked_up: { text: '已取件', type: 'default' },
   overdue: { text: '滞留', type: 'warning' },
   returned: { text: '已退回', type: 'error' }
@@ -139,6 +142,21 @@ const columns: DataTableColumns<Parcel> = [
     key: 'received_at',
     width: 160,
     render: (row) => new Date(row.received_at).toLocaleString('zh-CN')
+  },
+  {
+    title: '操作',
+    key: 'actions',
+    width: 120,
+    render: (row) => {
+      if (row.status === 'received') {
+        return h(NButton, {
+          size: 'small',
+          type: 'primary',
+          onClick: () => handleShelve(row)
+        }, { default: () => '上架' })
+      }
+      return null
+    }
   }
 ]
 
@@ -173,6 +191,17 @@ const handleOpenReceive = () => {
     notes: ''
   }
   showReceiveModal.value = true
+}
+
+// 包裹上架
+const handleShelve = async (parcel: Parcel) => {
+  const res = await shelveParcel(parcel.id)
+  if (res.code === 0) {
+    message.success(`上架成功！货架位置：${res.data?.shelf?.shelf_code}`)
+    loadParcels()
+  } else {
+    message.error(res.message || '上架失败')
+  }
 }
 
 // 提交入库

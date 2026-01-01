@@ -22,15 +22,15 @@ type PickupParcelRequest struct {
 
 // ShelfInfo 货架信息
 type ShelfInfo struct {
-	ID         int64  `json:"id"`
-	ShelfCode  string `json:"shelf_code"`
-	Area       string `json:"area"`
-	Floor      int    `json:"floor"`
-	Column     int    `json:"column"`
-	Type       string `json:"type"`
-	Capacity   int    `json:"capacity"`
-	CurrentCount int  `json:"current_count,omitempty"`
-	Status     string `json:"status,omitempty"`
+	ID           int64  `json:"id"`
+	ShelfCode    string `json:"shelf_code"`
+	Area         string `json:"area"`
+	Floor        int    `json:"floor"`
+	Column       int    `json:"column"`
+	Type         string `json:"type"`
+	Capacity     int    `json:"capacity"`
+	CurrentCount int    `json:"current_count,omitempty"`
+	Status       string `json:"status,omitempty"`
 }
 
 // ParcelInfo 包裹信息
@@ -78,15 +78,14 @@ type ParcelListData struct {
 // DashboardStatistics 仪表盘统计数据
 type DashboardStatistics struct {
 	Today struct {
-		ReceivedCount  int `json:"received_count"`
-		PickedUpCount  int `json:"picked_up_count"`
-		OverdueCount   int `json:"overdue_count"`
+		ReceivedCount int `json:"received_count"`
+		PickedUpCount int `json:"picked_up_count"`
+		OverdueCount  int `json:"overdue_count"`
 	} `json:"today"`
 	Parcels struct {
 		Total          int `json:"total"`
 		Received       int `json:"received"`
-		Shelved        int `json:"shelved"`
-		ReadyForPickup int `json:"ready_for_pickup"`
+		ReadyForPickup int `json:"ready"`
 		PickedUp       int `json:"picked_up"`
 		Overdue        int `json:"overdue"`
 		Returned       int `json:"returned"`
@@ -97,9 +96,9 @@ type DashboardStatistics struct {
 		UtilizationRate float64 `json:"utilization_rate"`
 	} `json:"shelves"`
 	RecentTrends []struct {
-		Date      string `json:"date"`
-		Received  int    `json:"received"`
-		PickedUp  int    `json:"picked_up"`
+		Date     string `json:"date"`
+		Received int    `json:"received"`
+		PickedUp int    `json:"picked_up"`
 	} `json:"recent_trends"`
 }
 
