@@ -90,7 +90,7 @@ func (s *parcelService) ShelveParcel(ctx context.Context, id int64) (*model.Parc
 
 		// 更新包裹状态
 		now := time.Now()
-		parcel.Status = model.ParcelStatusReadyForPickup
+		parcel.Status = model.ParcelStatusReady
 		parcel.ShelfID = &shelf.ID
 		parcel.ShelvedAt = &now
 
@@ -135,7 +135,7 @@ func (s *parcelService) PickupParcel(ctx context.Context, req *v1.PickupParcelRe
 	}
 
 	// 只有待取件或滞留状态的包裹才能取件
-	if parcel.Status != model.ParcelStatusReadyForPickup && parcel.Status != model.ParcelStatusOverdue {
+	if parcel.Status != model.ParcelStatusReady && parcel.Status != model.ParcelStatusOverdue {
 		return nil, errors.New("该包裹当前状态不允许取件")
 	}
 
@@ -233,7 +233,7 @@ func (s *parcelService) GetDashboardStatistics(ctx context.Context) (*v1.Dashboa
 
 	statusCounts, _ := s.parcelRepo.CountByStatus(ctx)
 	stats.Parcels.Received = statusCounts[string(model.ParcelStatusReceived)]
-	stats.Parcels.ReadyForPickup = statusCounts[string(model.ParcelStatusReadyForPickup)]
+	stats.Parcels.ReadyForPickup = statusCounts[string(model.ParcelStatusReady)]
 	stats.Parcels.PickedUp = statusCounts[string(model.ParcelStatusPickedUp)]
 	stats.Parcels.Overdue = statusCounts[string(model.ParcelStatusOverdue)]
 	stats.Parcels.Returned = statusCounts[string(model.ParcelStatusReturned)]

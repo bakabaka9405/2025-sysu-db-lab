@@ -10,6 +10,7 @@ import (
 	"backend/internal/model"
 	"backend/internal/service"
 	mock_repository "backend/test/mocks/repository"
+
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
@@ -36,25 +37,8 @@ func TestParcelService_ReceiveParcel(t *testing.T) {
 		Notes:           "Test notes",
 	}
 
-	shelfID := int64(1)
-	mockShelf := &model.Shelf{
-		ID:           shelfID,
-		ShelfCode:    "A-1-1",
-		Type:         model.ShelfTypeSmall,
-		CurrentCount: 5,
-		Capacity:     100,
-		Status:       model.ShelfStatusActive,
-	}
-
 	mockParcelRepo.EXPECT().GetByTrackingNumber(ctx, req.TrackingNumber).Return(nil, nil)
-	mockTm.EXPECT().Transaction(ctx, gomock.Any()).DoAndReturn(
-		func(ctx context.Context, fn func(context.Context) error) error {
-			mockShelfRepo.EXPECT().FindAvailableShelfByType(ctx, model.ShelfTypeSmall).Return(mockShelf, nil)
-			mockParcelRepo.EXPECT().Create(ctx, gomock.Any()).Return(nil)
-			mockShelfRepo.EXPECT().IncrementCount(ctx, shelfID).Return(nil)
-			return fn(ctx)
-		},
-	)
+	mockParcelRepo.EXPECT().Create(ctx, gomock.Any()).Return(nil)
 	mockParcelRepo.EXPECT().GetByID(ctx, gomock.Any()).Return(&model.Parcel{
 		ID:             1,
 		TrackingNumber: req.TrackingNumber,
@@ -62,8 +46,6 @@ func TestParcelService_ReceiveParcel(t *testing.T) {
 		RecipientName:  req.RecipientName,
 		RecipientPhone: req.RecipientPhone,
 		Status:         model.ParcelStatusReceived,
-		ShelfID:        &shelfID,
-		Shelf:          mockShelf,
 	}, nil)
 
 	parcel, err := parcelService.ReceiveParcel(ctx, req)
@@ -71,6 +53,7 @@ func TestParcelService_ReceiveParcel(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, parcel)
 	assert.Equal(t, req.TrackingNumber, parcel.TrackingNumber)
+	assert.Equal(t, model.ParcelStatusReceived, parcel.Status)
 }
 
 func TestParcelService_ReceiveParcel_DuplicateTracking(t *testing.T) {
@@ -124,7 +107,7 @@ func TestParcelService_PickupParcel(t *testing.T) {
 		ID:             1,
 		PickupCode:     req.PickupCode,
 		RecipientPhone: req.RecipientPhone,
-		Status:         model.ParcelStatusReceived,
+		Status:         model.ParcelStatusReady,
 		ShelfID:        &shelfID,
 	}
 

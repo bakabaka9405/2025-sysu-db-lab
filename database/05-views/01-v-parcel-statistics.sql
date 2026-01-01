@@ -19,10 +19,3 @@ SELECT
 FROM parcels
 WHERE deleted_at IS NULL
 GROUP BY DATE(received_at), status, courier_company, size;
-
--- 使用示例：
--- 查询某日各状态包裹数量
--- SELECT stat_date, status, SUM(parcel_count)
--- FROM v_parcel_statistics
--- WHERE stat_date = '2025-01-15'
--- GROUP BY stat_date, status;

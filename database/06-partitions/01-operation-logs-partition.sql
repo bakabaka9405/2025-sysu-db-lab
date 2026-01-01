@@ -64,12 +64,12 @@ CREATE TABLE IF NOT EXISTS operation_logs_2025_12
     PARTITION OF operation_logs_partitioned
     FOR VALUES FROM ('2025-12-01') TO ('2026-01-01');
 
--- 默认分区（处理超出范围的数据）
+-- 默认分区
 CREATE TABLE IF NOT EXISTS operation_logs_default
     PARTITION OF operation_logs_partitioned
     DEFAULT;
 
--- 分区索引（自动应用到所有分区）
+-- 分区索引
 CREATE INDEX IF NOT EXISTS idx_op_logs_part_operator
     ON operation_logs_partitioned (operator_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_op_logs_part_target
@@ -144,11 +144,3 @@ BEGIN
     RETURN v_count;
 END;
 $$ LANGUAGE plpgsql;
-
--- 使用示例：
--- 创建2026年1月分区
--- SELECT create_monthly_partition(2026, 1);
-
--- 删除超过12个月的旧分区
--- SELECT drop_old_partitions(12);
-

@@ -11,11 +11,11 @@ import (
 type ParcelStatus string
 
 const (
-	ParcelStatusReceived       ParcelStatus = "received"  // 已入库（待上架）
-	ParcelStatusReadyForPickup ParcelStatus = "ready"     // 已上架/待取件
-	ParcelStatusPickedUp       ParcelStatus = "picked_up" // 已取件
-	ParcelStatusOverdue        ParcelStatus = "overdue"   // 滞留
-	ParcelStatusReturned       ParcelStatus = "returned"  // 已退回
+	ParcelStatusReceived ParcelStatus = "received"  // 已入库（待上架）
+	ParcelStatusReady    ParcelStatus = "ready"     // 已上架/待取件
+	ParcelStatusPickedUp ParcelStatus = "picked_up" // 已取件
+	ParcelStatusOverdue  ParcelStatus = "overdue"   // 滞留
+	ParcelStatusReturned ParcelStatus = "returned"  // 已退回
 )
 
 // ParcelSize 包裹尺寸

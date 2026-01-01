@@ -23,7 +23,3 @@ CREATE TRIGGER trg_parcels_notes_tsv
     BEFORE INSERT OR UPDATE OF notes ON parcels
     FOR EACH ROW
     EXECUTE FUNCTION update_notes_tsv();
-
--- 全文搜索查询示例:
--- SELECT * FROM parcels
--- WHERE notes_tsv @@ to_tsquery('simple', '易碎');

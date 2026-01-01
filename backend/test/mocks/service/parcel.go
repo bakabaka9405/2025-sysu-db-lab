@@ -140,3 +140,18 @@ func (mr *MockParcelServiceMockRecorder) ReceiveParcel(ctx, req interface{}) *go
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReceiveParcel", reflect.TypeOf((*MockParcelService)(nil).ReceiveParcel), ctx, req)
 }
+
+// ShelveParcel mocks base method.
+func (m *MockParcelService) ShelveParcel(ctx context.Context, id int64) (*model.Parcel, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ShelveParcel", ctx, id)
+	ret0, _ := ret[0].(*model.Parcel)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ShelveParcel indicates an expected call of ShelveParcel.
+func (mr *MockParcelServiceMockRecorder) ShelveParcel(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ShelveParcel", reflect.TypeOf((*MockParcelService)(nil).ShelveParcel), ctx, id)
+}
