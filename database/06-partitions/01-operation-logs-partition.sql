@@ -64,6 +64,10 @@ CREATE TABLE IF NOT EXISTS operation_logs_2025_12
     PARTITION OF operation_logs_partitioned
     FOR VALUES FROM ('2025-12-01') TO ('2026-01-01');
 
+CREATE TABLE IF NOT EXISTS operation_logs_2026_01
+    PARTITION OF operation_logs_partitioned
+    FOR VALUES FROM ('2026-01-01') TO ('2026-02-01');
+
 -- 默认分区
 CREATE TABLE IF NOT EXISTS operation_logs_default
     PARTITION OF operation_logs_partitioned

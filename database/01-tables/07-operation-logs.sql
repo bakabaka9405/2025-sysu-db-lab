@@ -51,6 +51,9 @@ CREATE TABLE operation_logs_2025_11 PARTITION OF operation_logs
 CREATE TABLE operation_logs_2025_12 PARTITION OF operation_logs
     FOR VALUES FROM ('2025-12-01') TO ('2026-01-01');
 
+CREATE TABLE operation_logs_2026_01 PARTITION OF operation_logs
+    FOR VALUES FROM ('2026-01-01') TO ('2026-02-01');
+
 -- 创建索引
 CREATE INDEX idx_operation_logs_operator ON operation_logs(operator_id);
 CREATE INDEX idx_operation_logs_type ON operation_logs(operation_type);
