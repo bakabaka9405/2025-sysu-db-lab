@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, h, computed } from 'vue'
+import { ref, onMounted, h } from 'vue'
 import {
   NCard,
   NDataTable,
@@ -39,9 +39,9 @@ const shelves = ref<Shelf[]>([])
 const total = ref(0)
 const page = ref(1)
 const pageSize = ref(20)
-const areaFilter = ref<string | null>(null)
-const typeFilter = ref<string | null>(null)
-const statusFilter = ref<string | null>(null)
+const areaFilter = ref('')
+const typeFilter = ref('')
+const statusFilter = ref('')
 
 // 统计数据
 const statistics = ref<ShelfStatistics | null>(null)
@@ -65,21 +65,21 @@ const editFormData = ref<UpdateShelfRequest>({})
 
 // 筛选选项
 const areaOptions = [
-  { label: '全部', value: null },
+  { label: '全部', value: '' },
   { label: 'A区', value: 'A' },
   { label: 'B区', value: 'B' },
   { label: 'C区', value: 'C' }
 ]
 
 const typeOptions = [
-  { label: '全部', value: null },
+  { label: '全部', value: '' },
   { label: '小件', value: 'small' },
   { label: '中件', value: 'medium' },
   { label: '大件', value: 'large' }
 ]
 
 const statusOptions = [
-  { label: '全部', value: null },
+  { label: '全部', value: '' },
   { label: '启用', value: 'active' },
   { label: '停用', value: 'inactive' }
 ]
@@ -157,7 +157,7 @@ const columns: DataTableColumns<Shelf> = [
           h(NButton, {
             size: 'small',
             type: 'error',
-            disabled: row.current_count > 0,
+            disabled: (row.current_count ?? 0) > 0,
             onClick: () => handleDelete(row)
           }, { default: () => '删除' })
         ]
@@ -283,6 +283,13 @@ const handlePageChange = (newPage: number) => {
   loadShelves()
 }
 
+// 处理每页条数变化
+const handlePageSizeChange = (newPageSize: number) => {
+  pageSize.value = newPageSize
+  page.value = 1
+  loadShelves()
+}
+
 // 处理筛选变化
 const handleFilterChange = () => {
   page.value = 1
@@ -334,58 +341,31 @@ onMounted(() => {
 
       <!-- 筛选工具栏 -->
       <NSpace style="margin-bottom: 16px;">
-        <NSelect
-          v-model:value="areaFilter"
-          :options="areaOptions"
-          placeholder="区域"
-          style="width: 100px;"
-          @update:value="handleFilterChange"
-        />
-        <NSelect
-          v-model:value="typeFilter"
-          :options="typeOptions"
-          placeholder="类型"
-          style="width: 100px;"
-          @update:value="handleFilterChange"
-        />
-        <NSelect
-          v-model:value="statusFilter"
-          :options="statusOptions"
-          placeholder="状态"
-          style="width: 100px;"
-          @update:value="handleFilterChange"
-        />
+        <NSelect v-model:value="areaFilter" :options="areaOptions" placeholder="区域" style="width: 100px;"
+          @update:value="handleFilterChange" />
+        <NSelect v-model:value="typeFilter" :options="typeOptions" placeholder="类型" style="width: 100px;"
+          @update:value="handleFilterChange" />
+        <NSelect v-model:value="statusFilter" :options="statusOptions" placeholder="状态" style="width: 100px;"
+          @update:value="handleFilterChange" />
       </NSpace>
 
       <!-- 数据表格 -->
-      <NDataTable
-        :columns="columns"
-        :data="shelves"
-        :loading="loading"
-        :pagination="{
-          page: page,
-          pageSize: pageSize,
-          itemCount: total,
-          onUpdatePage: handlePageChange
-        }"
-        :scroll-x="1000"
-      />
+      <NDataTable :remote="true" :columns="columns" :data="shelves" :loading="loading" :pagination="{
+        page: page,
+        pageSize: pageSize,
+        itemCount: total,
+        showSizePicker: true,
+        pageSizes: [10, 20, 50],
+        onUpdatePage: handlePageChange,
+        onUpdatePageSize: handlePageSizeChange,
+        prefix: () => `共 ${total} 条`
+      }" :scroll-x="1000" />
     </NCard>
 
     <!-- 创建/编辑弹窗 -->
-    <NModal
-      v-model:show="showModal"
-      preset="card"
-      :title="modalMode === 'create' ? '新增货架' : '编辑货架'"
-      style="width: 500px;"
-      :mask-closable="false"
-    >
-      <NForm
-        v-if="modalMode === 'create'"
-        :model="formData"
-        label-placement="left"
-        label-width="80"
-      >
+    <NModal v-model:show="showModal" preset="card" :title="modalMode === 'create' ? '新增货架' : '编辑货架'"
+      style="width: 500px;" :mask-closable="false">
+      <NForm v-if="modalMode === 'create'" :model="formData" label-placement="left" label-width="80">
         <NFormItem label="货架编码" required>
           <NInput v-model:value="formData.shelf_code" placeholder="如 A-1-1" />
         </NFormItem>
@@ -399,26 +379,18 @@ onMounted(() => {
           <NInputNumber v-model:value="formData.column" :min="1" :max="20" style="width: 100%;" />
         </NFormItem>
         <NFormItem label="类型" required>
-          <NSelect
-            v-model:value="formData.type"
-            :options="[
-              { label: '小件', value: 'small' },
-              { label: '中件', value: 'medium' },
-              { label: '大件', value: 'large' }
-            ]"
-          />
+          <NSelect v-model:value="formData.type" :options="[
+            { label: '小件', value: 'small' },
+            { label: '中件', value: 'medium' },
+            { label: '大件', value: 'large' }
+          ]" />
         </NFormItem>
         <NFormItem label="容量" required>
           <NInputNumber v-model:value="formData.capacity" :min="1" :max="100" style="width: 100%;" />
         </NFormItem>
       </NForm>
 
-      <NForm
-        v-else
-        :model="editFormData"
-        label-placement="left"
-        label-width="80"
-      >
+      <NForm v-else :model="editFormData" label-placement="left" label-width="80">
         <NFormItem label="区域">
           <NInput v-model:value="editFormData.area" />
         </NFormItem>
@@ -429,26 +401,20 @@ onMounted(() => {
           <NInputNumber v-model:value="editFormData.column" :min="1" :max="20" style="width: 100%;" />
         </NFormItem>
         <NFormItem label="类型">
-          <NSelect
-            v-model:value="editFormData.type"
-            :options="[
-              { label: '小件', value: 'small' },
-              { label: '中件', value: 'medium' },
-              { label: '大件', value: 'large' }
-            ]"
-          />
+          <NSelect v-model:value="editFormData.type" :options="[
+            { label: '小件', value: 'small' },
+            { label: '中件', value: 'medium' },
+            { label: '大件', value: 'large' }
+          ]" />
         </NFormItem>
         <NFormItem label="容量">
           <NInputNumber v-model:value="editFormData.capacity" :min="1" :max="100" style="width: 100%;" />
         </NFormItem>
         <NFormItem label="状态">
-          <NSelect
-            v-model:value="editFormData.status"
-            :options="[
-              { label: '启用', value: 'active' },
-              { label: '停用', value: 'inactive' }
-            ]"
-          />
+          <NSelect v-model:value="editFormData.status" :options="[
+            { label: '启用', value: 'active' },
+            { label: '停用', value: 'inactive' }
+          ]" />
         </NFormItem>
       </NForm>
 

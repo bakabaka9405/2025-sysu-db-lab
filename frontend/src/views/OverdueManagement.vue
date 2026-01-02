@@ -30,7 +30,7 @@ const overdueList = ref<OverdueInfo[]>([])
 const total = ref(0)
 const page = ref(1)
 const pageSize = ref(20)
-const statusFilter = ref<string | null>(null)
+const statusFilter = ref('')
 
 // 选中的行
 const checkedRowKeys = ref<DataTableRowKey[]>([])
@@ -46,7 +46,7 @@ const statistics = computed(() => {
 
 // 状态选项
 const statusOptions = [
-  { label: '全部', value: null },
+  { label: '全部', value: '' },
   { label: '待处理', value: 'pending' },
   { label: '已提醒', value: 'reminded' },
   { label: '已退回', value: 'returned' }
@@ -205,6 +205,13 @@ const handlePageChange = (newPage: number) => {
   loadOverdueList()
 }
 
+// 处理每页条数变化
+const handlePageSizeChange = (newPageSize: number) => {
+  pageSize.value = newPageSize
+  page.value = 1
+  loadOverdueList()
+}
+
 // 处理选择变化
 const handleCheck = (rowKeys: DataTableRowKey[]) => {
   checkedRowKeys.value = rowKeys
@@ -278,6 +285,7 @@ onMounted(() => {
 
       <!-- 数据表格 -->
       <NDataTable
+        :remote="true"
         :columns="columns"
         :data="overdueList"
         :loading="loading"
@@ -288,7 +296,11 @@ onMounted(() => {
           page: page,
           pageSize: pageSize,
           itemCount: total,
-          onUpdatePage: handlePageChange
+          showSizePicker: true,
+          pageSizes: [10, 20, 50],
+          onUpdatePage: handlePageChange,
+          onUpdatePageSize: handlePageSizeChange,
+          prefix: () => `共 ${total} 条`
         }"
         :scroll-x="1300"
       />

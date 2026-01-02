@@ -279,6 +279,13 @@ const handlePageChange = (newPage: number) => {
   loadParcels()
 }
 
+// 处理每页条数变化
+const handlePageSizeChange = (newPageSize: number) => {
+  pageSize.value = newPageSize
+  page.value = 1
+  loadParcels()
+}
+
 // 处理状态筛选
 const handleStatusChange = () => {
   page.value = 1
@@ -311,12 +318,23 @@ onMounted(() => {
       </NSpace>
 
       <!-- 数据表格 -->
-      <NDataTable :columns="columns" :data="parcels" :loading="loading" :pagination="{
-        page: page,
-        pageSize: pageSize,
-        itemCount: total,
-        onUpdatePage: handlePageChange
-      }" :scroll-x="1200" />
+      <NDataTable
+        :remote="true"
+        :columns="columns"
+        :data="parcels"
+        :loading="loading"
+        :pagination="{
+          page: page,
+          pageSize: pageSize,
+          itemCount: total,
+          showSizePicker: true,
+          pageSizes: [10, 20, 50],
+          onUpdatePage: handlePageChange,
+          onUpdatePageSize: handlePageSizeChange,
+          prefix: () => `共 ${total} 条`
+        }"
+        :scroll-x="1200"
+      />
     </NCard>
 
     <!-- 入库弹窗 -->
