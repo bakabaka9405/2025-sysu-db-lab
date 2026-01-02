@@ -18,6 +18,8 @@ import {
 } from 'naive-ui'
 import { getParcelByPickupCode, getParcelByTrackingNumber, pickupParcel } from '../api/parcel'
 import type { Parcel } from '../api/types'
+import { PARCEL_STATUS_MAP } from '../constants/status'
+import { formatDateTime } from '../utils/formatters'
 
 const message = useMessage()
 const searchType = ref<'pickup_code' | 'tracking_number'>('pickup_code')
@@ -31,15 +33,6 @@ const searchError = ref('')
 const showPickupModal = ref(false)
 const pickupLoading = ref(false)
 const verifyPhone = ref('')
-
-// 包裹状态映射
-const parcelStatusMap: Record<string, { text: string; type: any }> = {
-  received: { text: '待上架', type: 'info' },
-  ready: { text: '待取件', type: 'success' },
-  picked_up: { text: '已取件', type: 'default' },
-  overdue: { text: '滞留', type: 'warning' },
-  returned: { text: '已退回', type: 'error' }
-}
 
 // 是否可以取件
 const canPickup = () => {
@@ -127,18 +120,6 @@ const handleReset = () => {
   searchResult.value = null
   searchError.value = ''
 }
-
-// 格式化日期时间
-const formatDateTime = (dateStr?: string) => {
-  if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
 </script>
 
 <template>
@@ -199,8 +180,8 @@ const formatDateTime = (dateStr?: string) => {
             {{ searchResult.weight }} kg
           </NDescriptionsItem>
           <NDescriptionsItem label="状态">
-            <NTag :type="parcelStatusMap[searchResult.status]?.type || 'default'">
-              {{ parcelStatusMap[searchResult.status]?.text || searchResult.status }}
+            <NTag :type="PARCEL_STATUS_MAP[searchResult.status]?.type || 'default'">
+              {{ PARCEL_STATUS_MAP[searchResult.status]?.text || searchResult.status }}
             </NTag>
           </NDescriptionsItem>
           <NDescriptionsItem v-if="searchResult.shelf" label="货架位置">
@@ -243,11 +224,8 @@ const formatDateTime = (dateStr?: string) => {
 
 <style scoped>
 .search-container {
-  min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #36ad6a 0%, #18a058 100%);
   padding: 40px 20px;
 }
 

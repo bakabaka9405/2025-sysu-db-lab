@@ -8,13 +8,14 @@ import {
   NGridItem,
   NCard,
   NStatistic,
-  NDataTable,
   useMessage
 } from 'naive-ui'
 import { getDashboardStatistics } from '../api/parcel'
 import { getMyParcels } from '../api/parcel'
 import { getMyShipments } from '../api/shipment'
 import type { DashboardStatistics, Parcel, Shipment } from '../api/types'
+import ParcelTable from '../components/table/ParcelTable.vue'
+import ShipmentTable from '../components/table/ShipmentTable.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -35,52 +36,6 @@ const isStaffOrAdmin = computed(() => {
   const role = userInfo.value?.role
   return role === 'staff' || role === 'admin'
 })
-
-// 包裹状态映射
-const parcelStatusMap: Record<string, string> = {
-  received: '待上架',
-  ready: '待取件',
-  picked_up: '已取件',
-  overdue: '滞留',
-  returned: '已退回'
-}
-
-// 寄件状态映射
-const shipmentStatusMap: Record<string, string> = {
-  pending: '待发货',
-  shipped: '已发货',
-  delivered: '已送达',
-  cancelled: '已取消'
-}
-
-// 包裹表格列定义
-const parcelColumns = [
-  { title: '取件码', key: 'pickup_code' },
-  { title: '快递公司', key: 'courier_company' },
-  {
-    title: '状态',
-    key: 'status',
-    render: (row: Parcel) => parcelStatusMap[row.status] || row.status
-  },
-  {
-    title: '入库时间',
-    key: 'received_at',
-    render: (row: Parcel) => new Date(row.received_at).toLocaleString('zh-CN')
-  }
-]
-
-// 寄件表格列定义
-const shipmentColumns = [
-  { title: '寄件单号', key: 'shipment_number' },
-  { title: '收件人', key: 'recipient_name' },
-  { title: '快递公司', key: 'courier_company' },
-  { title: '运费', key: 'freight', render: (row: Shipment) => `¥${row.freight}` },
-  {
-    title: '状态',
-    key: 'status',
-    render: (row: Shipment) => shipmentStatusMap[row.status] || row.status
-  }
-]
 
 // 加载数据
 const loadData = async () => {
@@ -150,11 +105,11 @@ onMounted(() => {
           </NGridItem>
           <NGridItem>
             <NCard>
-              <NStatistic
-                label="货架使用率"
-                :value="statistics.shelves.utilization_rate"
-                suffix="%"
-              />
+              <NStatistic label="货架使用率">
+                <template #default>
+                  {{ (statistics.shelves.utilization_rate || 0).toFixed(1) }}%
+                </template>
+              </NStatistic>
             </NCard>
           </NGridItem>
         </NGrid>
@@ -169,16 +124,13 @@ onMounted(() => {
           </NButton>
         </div>
         <NCard>
-          <NDataTable
-            :columns="parcelColumns"
-            :data="recentParcels"
+          <ParcelTable
+            :parcels="recentParcels"
             :loading="loading"
+            compact
             :pagination="false"
           />
-          <div
-            v-if="recentParcels.length === 0 && !loading"
-            class="empty-state"
-          >
+          <div v-if="recentParcels.length === 0 && !loading" class="empty-state">
             暂无包裹
           </div>
         </NCard>
@@ -193,16 +145,13 @@ onMounted(() => {
           </NButton>
         </div>
         <NCard>
-          <NDataTable
-            :columns="shipmentColumns"
-            :data="recentShipments"
+          <ShipmentTable
+            :shipments="recentShipments"
             :loading="loading"
+            compact
             :pagination="false"
           />
-          <div
-            v-if="recentShipments.length === 0 && !loading"
-            class="empty-state"
-          >
+          <div v-if="recentShipments.length === 0 && !loading" class="empty-state">
             暂无寄件记录
           </div>
         </NCard>

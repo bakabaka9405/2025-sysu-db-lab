@@ -1,22 +1,20 @@
 <script setup lang="ts">
-import { ref, onMounted, h } from 'vue'
+import { ref, onMounted } from 'vue'
 import {
   NCard,
-  NDataTable,
   NButton,
   NSpace,
-  NTag,
   NModal,
   NForm,
   NFormItem,
   NInput,
   NSelect,
   NInputNumber,
-  useMessage,
-  type DataTableColumns
+  useMessage
 } from 'naive-ui'
 import { getMyShipments, createShipment, getCourierCompanies, calculateFreight } from '../api/shipment'
 import type { Shipment, CreateShipmentRequest, CalculateFreightRequest } from '../api/types'
+import ShipmentTable from '../components/table/ShipmentTable.vue'
 
 const message = useMessage()
 
@@ -41,71 +39,6 @@ const formValue = ref<CreateShipmentRequest>({
   weight: 1,
   volume: 0.001
 })
-
-// 寄件状态映射
-const shipmentStatusMap: Record<string, { text: string; type: any }> = {
-  pending: { text: '待发货', type: 'warning' },
-  shipped: { text: '已发货', type: 'info' },
-  delivered: { text: '已送达', type: 'success' },
-  cancelled: { text: '已取消', type: 'error' }
-}
-
-// 表格列定义
-const columns: DataTableColumns<Shipment> = [
-  {
-    title: '寄件单号',
-    key: 'shipment_number',
-    width: 180
-  },
-  {
-    title: '收件人',
-    key: 'recipient_name',
-    width: 100
-  },
-  {
-    title: '收件电话',
-    key: 'recipient_phone',
-    width: 120
-  },
-  {
-    title: '收件地址',
-    key: 'recipient_address',
-    ellipsis: { tooltip: true },
-    width: 200
-  },
-  {
-    title: '快递公司',
-    key: 'courier_company',
-    width: 100
-  },
-  {
-    title: '重量',
-    key: 'weight',
-    width: 80,
-    render: (row) => `${row.weight} kg`
-  },
-  {
-    title: '运费',
-    key: 'freight',
-    width: 80,
-    render: (row) => `¥${row.freight}`
-  },
-  {
-    title: '状态',
-    key: 'status',
-    width: 100,
-    render: (row) => {
-      const status = shipmentStatusMap[row.status] || { text: row.status, type: 'default' }
-      return h(NTag, { type: status.type }, { default: () => status.text })
-    }
-  },
-  {
-    title: '创建时间',
-    key: 'created_at',
-    width: 160,
-    render: (row) => new Date(row.created_at).toLocaleString('zh-CN')
-  }
-]
 
 // 加载数据
 const loadData = async () => {
@@ -234,22 +167,16 @@ onMounted(() => {
       </template>
 
       <!-- 数据表格 -->
-      <NDataTable
-        :remote="true"
-        :columns="columns"
-        :data="shipments"
+      <ShipmentTable
+        :shipments="shipments"
         :loading="loading"
         :pagination="{
-          page: page,
-          pageSize: pageSize,
-          itemCount: total,
-          showSizePicker: true,
-          pageSizes: [10, 20, 50],
-          onUpdatePage: handlePageChange,
-          onUpdatePageSize: handlePageSizeChange,
-          prefix: () => `共 ${total} 条`
+          page,
+          pageSize,
+          total,
+          onChange: handlePageChange,
+          onSizeChange: handlePageSizeChange
         }"
-        :scroll-x="1200"
       />
     </NCard>
 
@@ -332,7 +259,5 @@ onMounted(() => {
 <style scoped>
 .page-container {
   padding: 24px;
-  min-height: 100vh;
-  background-color: #f5f5f5;
 }
 </style>

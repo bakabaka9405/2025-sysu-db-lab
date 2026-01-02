@@ -1,21 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted, h } from 'vue'
+import { ref, onMounted } from 'vue'
 import {
   NCard,
-  NTabs,
-  NTabPane,
-  NDataTable,
   NButton,
   NSpace,
-  NTag,
   NModal,
   NForm,
   NFormItem,
   NInput,
   NSelect,
   NInputNumber,
-  useMessage,
-  type DataTableColumns
+  useMessage
 } from 'naive-ui'
 import {
   getParcelList,
@@ -24,7 +19,9 @@ import {
   pickupParcel
 } from '../api/parcel'
 import { COURIER_COMPANIES } from '../api/mock-data'
-import type { Parcel, ReceiveParcelRequest, PickupParcelRequest, ParcelSize } from '../api/types'
+import { PARCEL_STATUS_OPTIONS } from '../constants/status'
+import type { Parcel, ReceiveParcelRequest, PickupParcelRequest } from '../api/types'
+import ParcelTable from '../components/table/ParcelTable.vue'
 
 const message = useMessage()
 
@@ -58,16 +55,6 @@ const pickupForm = ref<PickupParcelRequest>({
   recipient_phone: ''
 })
 
-// 状态选项
-const statusOptions = [
-  { label: '全部', value: '' },
-  { label: '待上架', value: 'received' },
-  { label: '待取件', value: 'ready' },
-  { label: '已取件', value: 'picked_up' },
-  { label: '滞留', value: 'overdue' },
-  { label: '已退回', value: 'returned' }
-]
-
 // 包裹尺寸选项
 const sizeOptions = [
   { label: '小', value: 'small' },
@@ -77,88 +64,6 @@ const sizeOptions = [
 
 // 快递公司选项
 const courierOptions = COURIER_COMPANIES.map(c => ({ label: c, value: c }))
-
-// 包裹状态映射
-const parcelStatusMap: Record<string, { text: string; type: any }> = {
-  received: { text: '待上架', type: 'info' },
-  ready: { text: '待取件', type: 'success' },
-  picked_up: { text: '已取件', type: 'default' },
-  overdue: { text: '滞留', type: 'warning' },
-  returned: { text: '已退回', type: 'error' }
-}
-
-// 表格列定义
-const columns: DataTableColumns<Parcel> = [
-  {
-    title: 'ID',
-    key: 'id',
-    width: 60
-  },
-  {
-    title: '取件码',
-    key: 'pickup_code',
-    width: 100,
-    render: (row) => {
-      return h('strong', { style: 'color: #18a058; font-size: 14px;' }, row.pickup_code)
-    }
-  },
-  {
-    title: '快递单号',
-    key: 'tracking_number',
-    width: 140
-  },
-  {
-    title: '收件人',
-    key: 'recipient_name',
-    width: 80
-  },
-  {
-    title: '手机号',
-    key: 'recipient_phone',
-    width: 120
-  },
-  {
-    title: '快递公司',
-    key: 'courier_company',
-    width: 100
-  },
-  {
-    title: '货架',
-    key: 'shelf',
-    width: 100,
-    render: (row) => row.shelf?.shelf_code || '-'
-  },
-  {
-    title: '状态',
-    key: 'status',
-    width: 100,
-    render: (row) => {
-      const status = parcelStatusMap[row.status] || { text: row.status, type: 'default' }
-      return h(NTag, { type: status.type }, { default: () => status.text })
-    }
-  },
-  {
-    title: '入库时间',
-    key: 'received_at',
-    width: 160,
-    render: (row) => new Date(row.received_at).toLocaleString('zh-CN')
-  },
-  {
-    title: '操作',
-    key: 'actions',
-    width: 120,
-    render: (row) => {
-      if (row.status === 'received') {
-        return h(NButton, {
-          size: 'small',
-          type: 'primary',
-          onClick: () => handleShelve(row)
-        }, { default: () => '上架' })
-      }
-      return null
-    }
-  }
-]
 
 // 加载包裹列表
 const loadParcels = async () => {
@@ -193,14 +98,16 @@ const handleOpenReceive = () => {
   showReceiveModal.value = true
 }
 
-// 包裹上架
-const handleShelve = async (parcel: Parcel) => {
-  const res = await shelveParcel(parcel.id)
-  if (res.code === 0) {
-    message.success(`上架成功！货架位置：${res.data?.shelf?.shelf_code}`)
-    loadParcels()
-  } else {
-    message.error(res.message || '上架失败')
+// 处理表格操作
+const handleTableAction = async (action: string, parcel: Parcel) => {
+  if (action === 'shelve') {
+    const res = await shelveParcel(parcel.id)
+    if (res.code === 0) {
+      message.success(`上架成功！货架位置：${res.data?.shelf?.shelf_code}`)
+      loadParcels()
+    } else {
+      message.error(res.message || '上架失败')
+    }
   }
 }
 
@@ -302,39 +209,26 @@ onMounted(() => {
     <NCard title="包裹管理">
       <template #header-extra>
         <NSpace>
-          <NButton type="primary" @click="handleOpenReceive">
-            包裹入库
-          </NButton>
-          <NButton type="success" @click="handleOpenPickup">
-            包裹取件
-          </NButton>
+          <NButton type="primary" @click="handleOpenReceive">包裹入库</NButton>
+          <NButton type="success" @click="handleOpenPickup">包裹取件</NButton>
         </NSpace>
       </template>
 
       <!-- 筛选工具栏 -->
       <NSpace style="margin-bottom: 16px;">
-        <NSelect v-model:value="statusFilter" :options="statusOptions" placeholder="状态筛选" style="width: 150px;"
+        <NSelect v-model:value="statusFilter" :options="PARCEL_STATUS_OPTIONS" placeholder="状态筛选" style="width: 150px;"
           @update:value="handleStatusChange" />
       </NSpace>
 
       <!-- 数据表格 -->
-      <NDataTable
-        :remote="true"
-        :columns="columns"
-        :data="parcels"
-        :loading="loading"
+      <ParcelTable :parcels="parcels" :loading="loading" show-id show-recipient show-actions :scroll-x="1200"
         :pagination="{
-          page: page,
-          pageSize: pageSize,
-          itemCount: total,
-          showSizePicker: true,
-          pageSizes: [10, 20, 50],
-          onUpdatePage: handlePageChange,
-          onUpdatePageSize: handlePageSizeChange,
-          prefix: () => `共 ${total} 条`
-        }"
-        :scroll-x="1200"
-      />
+          page,
+          pageSize,
+          total,
+          onChange: handlePageChange,
+          onSizeChange: handlePageSizeChange
+        }" @action="handleTableAction" />
     </NCard>
 
     <!-- 入库弹窗 -->
@@ -343,43 +237,32 @@ onMounted(() => {
         <NFormItem label="快递单号" required>
           <NInput v-model:value="receiveForm.tracking_number" placeholder="请输入快递单号" />
         </NFormItem>
-
         <NFormItem label="收件人姓名" required>
           <NInput v-model:value="receiveForm.recipient_name" placeholder="请输入收件人姓名" />
         </NFormItem>
-
         <NFormItem label="收件人电话" required>
           <NInput v-model:value="receiveForm.recipient_phone" placeholder="请输入收件人电话" />
         </NFormItem>
-
         <NFormItem label="身份证号">
           <NInput v-model:value="receiveForm.recipient_id_card" placeholder="选填" />
         </NFormItem>
-
         <NFormItem label="快递公司" required>
           <NSelect v-model:value="receiveForm.courier_company" :options="courierOptions" placeholder="请选择快递公司" />
         </NFormItem>
-
         <NFormItem label="包裹尺寸" required>
           <NSelect v-model:value="receiveForm.size" :options="sizeOptions" placeholder="请选择包裹尺寸" />
         </NFormItem>
-
         <NFormItem label="重量 (kg)" required>
-          <NInputNumber v-model:value="receiveForm.weight" :min="0.1" :max="50" :step="0.1" placeholder="请输入重量"
-            style="width: 100%;" />
+          <NInputNumber v-model:value="receiveForm.weight" :min="0.1" :max="50" :step="0.1" style="width: 100%;" />
         </NFormItem>
-
         <NFormItem label="备注">
           <NInput v-model:value="receiveForm.notes" type="textarea" placeholder="选填" :rows="3" />
         </NFormItem>
       </NForm>
-
       <template #footer>
         <NSpace justify="end">
           <NButton @click="showReceiveModal = false">取消</NButton>
-          <NButton type="primary" :loading="receiveLoading" @click="handleSubmitReceive">
-            确认入库
-          </NButton>
+          <NButton type="primary" :loading="receiveLoading" @click="handleSubmitReceive">确认入库</NButton>
         </NSpace>
       </template>
     </NModal>
@@ -390,18 +273,14 @@ onMounted(() => {
         <NFormItem label="取件码" required>
           <NInput v-model:value="pickupForm.pickup_code" placeholder="请输入取件码" size="large" />
         </NFormItem>
-
         <NFormItem label="手机号" required>
           <NInput v-model:value="pickupForm.recipient_phone" placeholder="请输入收件人手机号进行验证" size="large" />
         </NFormItem>
       </NForm>
-
       <template #footer>
         <NSpace justify="end">
           <NButton @click="showPickupModal = false">取消</NButton>
-          <NButton type="primary" :loading="pickupLoading" @click="handleSubmitPickup">
-            确认取件
-          </NButton>
+          <NButton type="primary" :loading="pickupLoading" @click="handleSubmitPickup">确认取件</NButton>
         </NSpace>
       </template>
     </NModal>
@@ -411,7 +290,5 @@ onMounted(() => {
 <style scoped>
 .page-container {
   padding: 24px;
-  min-height: 100vh;
-  background-color: #f5f5f5;
 }
 </style>

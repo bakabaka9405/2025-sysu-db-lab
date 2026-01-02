@@ -1,18 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, h } from 'vue'
-import {
-  NCard,
-  NDataTable,
-  NButton,
-  NSpace,
-  NTag,
-  NInput,
-  NSelect,
-  useMessage,
-  type DataTableColumns
-} from 'naive-ui'
+import { ref, onMounted } from 'vue'
+import { NCard, NSpace, NSelect, useMessage } from 'naive-ui'
 import { getMyParcels } from '../api/parcel'
 import type { Parcel } from '../api/types'
+import ParcelTable from '../components/table/ParcelTable.vue'
 
 const message = useMessage()
 const loading = ref(false)
@@ -23,7 +14,6 @@ const pageSize = ref(20)
 
 // 筛选条件
 const statusFilter = ref<string | null>(null)
-const searchKeyword = ref('')
 
 // 包裹状态选项
 const statusOptions = [
@@ -31,63 +21,6 @@ const statusOptions = [
   { label: '待取件', value: 'ready' },
   { label: '已取件', value: 'picked_up' },
   { label: '滞留', value: 'overdue' }
-]
-
-// 包裹状态映射
-const parcelStatusMap: Record<string, { text: string; type: any }> = {
-  received: { text: '待上架', type: 'info' },
-  ready: { text: '待取件', type: 'success' },
-  picked_up: { text: '已取件', type: 'default' },
-  overdue: { text: '滞留', type: 'warning' },
-  returned: { text: '已退回', type: 'error' }
-}
-
-// 表格列定义
-const columns: DataTableColumns<Parcel> = [
-  {
-    title: '取件码',
-    key: 'pickup_code',
-    width: 100,
-    render: (row) => {
-      return h('strong', { style: 'color: #18a058; font-size: 16px;' }, row.pickup_code)
-    }
-  },
-  {
-    title: '快递单号',
-    key: 'tracking_number',
-    width: 150
-  },
-  {
-    title: '快递公司',
-    key: 'courier_company',
-    width: 100
-  },
-  {
-    title: '货架位置',
-    key: 'shelf',
-    width: 120,
-    render: (row) => row.shelf?.shelf_code || '-'
-  },
-  {
-    title: '状态',
-    key: 'status',
-    width: 100,
-    render: (row) => {
-      const status = parcelStatusMap[row.status] || { text: row.status, type: 'default' }
-      return h(NTag, { type: status.type }, { default: () => status.text })
-    }
-  },
-  {
-    title: '入库时间',
-    key: 'received_at',
-    width: 160,
-    render: (row) => new Date(row.received_at).toLocaleString('zh-CN')
-  },
-  {
-    title: '备注',
-    key: 'notes',
-    ellipsis: { tooltip: true }
-  }
 ]
 
 // 加载数据
@@ -137,27 +70,27 @@ onMounted(() => {
     <NCard title="我的包裹">
       <!-- 筛选工具栏 -->
       <NSpace style="margin-bottom: 16px;">
-        <NSelect v-model:value="statusFilter" :options="statusOptions" placeholder="状态筛选" style="width: 150px;"
-          @update:value="handleStatusChange" />
+        <NSelect
+          v-model:value="statusFilter"
+          :options="statusOptions"
+          placeholder="状态筛选"
+          style="width: 150px;"
+          @update:value="handleStatusChange"
+        />
       </NSpace>
 
       <!-- 数据表格 -->
-      <NDataTable
-        :remote="true"
-        :columns="columns"
-        :data="parcels"
+      <ParcelTable
+        :parcels="parcels"
         :loading="loading"
+        show-notes
         :pagination="{
-          page: page,
-          pageSize: pageSize,
-          itemCount: total,
-          showSizePicker: true,
-          pageSizes: [10, 20, 50],
-          onUpdatePage: handlePageChange,
-          onUpdatePageSize: handlePageSizeChange,
-          prefix: () => `共 ${total} 条`
+          page,
+          pageSize,
+          total,
+          onChange: handlePageChange,
+          onSizeChange: handlePageSizeChange
         }"
-        :scroll-x="1000"
       />
     </NCard>
   </div>
@@ -166,7 +99,5 @@ onMounted(() => {
 <style scoped>
 .page-container {
   padding: 24px;
-  min-height: 100vh;
-  background-color: #f5f5f5;
 }
 </style>

@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, h } from 'vue'
+import { ref, onMounted } from 'vue'
 import {
   NCard,
-  NDataTable,
   NButton,
   NSpace,
-  NTag,
   NModal,
   NForm,
   NFormItem,
@@ -15,9 +13,7 @@ import {
   NStatistic,
   NGrid,
   NGi,
-  NProgress,
-  useMessage,
-  type DataTableColumns
+  useMessage
 } from 'naive-ui'
 import {
   getShelfList,
@@ -30,6 +26,7 @@ import {
   type UpdateShelfRequest,
   type ShelfStatistics
 } from '../api/shelf'
+import ShelfTable from '../components/table/ShelfTable.vue'
 
 const message = useMessage()
 
@@ -84,18 +81,6 @@ const statusOptions = [
   { label: '停用', value: 'inactive' }
 ]
 
-// 类型映射
-const typeMap: Record<string, string> = {
-  small: '小件',
-  medium: '中件',
-  large: '大件'
-}
-
-const statusMap: Record<string, { text: string; type: any }> = {
-  active: { text: '启用', type: 'success' },
-  inactive: { text: '停用', type: 'warning' }
-}
-
 // 负载等级颜色
 const getLoadColor = (rate: number) => {
   if (rate >= 90) return '#f5222d'
@@ -103,68 +88,6 @@ const getLoadColor = (rate: number) => {
   if (rate >= 30) return '#52c41a'
   return '#1890ff'
 }
-
-// 表格列定义
-const columns: DataTableColumns<Shelf> = [
-  { title: 'ID', key: 'id', width: 60 },
-  { title: '货架编码', key: 'shelf_code', width: 100 },
-  { title: '区域', key: 'area', width: 60 },
-  { title: '层', key: 'floor', width: 60 },
-  { title: '列', key: 'column', width: 60 },
-  {
-    title: '类型',
-    key: 'type',
-    width: 80,
-    render: (row) => typeMap[row.type] || row.type
-  },
-  {
-    title: '容量',
-    key: 'capacity',
-    width: 80,
-    render: (row) => `${row.current_count ?? 0}/${row.capacity}`
-  },
-  {
-    title: '使用率',
-    key: 'utilization',
-    width: 120,
-    render: (row) => {
-      const rate = Math.round(((row.current_count ?? 0) / row.capacity) * 100)
-      return h(NProgress, {
-        type: 'line',
-        percentage: rate,
-        color: getLoadColor(rate),
-        showIndicator: true
-      })
-    }
-  },
-  {
-    title: '状态',
-    key: 'status',
-    width: 80,
-    render: (row) => {
-      const status = statusMap[row.status ?? 'active'] || { text: row.status ?? '未知', type: 'default' }
-      return h(NTag, { type: status.type }, { default: () => status.text })
-    }
-  },
-  {
-    title: '操作',
-    key: 'actions',
-    width: 150,
-    render: (row) => {
-      return h(NSpace, {}, {
-        default: () => [
-          h(NButton, { size: 'small', onClick: () => handleEdit(row) }, { default: () => '编辑' }),
-          h(NButton, {
-            size: 'small',
-            type: 'error',
-            disabled: (row.current_count ?? 0) > 0,
-            onClick: () => handleDelete(row)
-          }, { default: () => '删除' })
-        ]
-      })
-    }
-  }
-]
 
 // 加载货架列表
 const loadShelves = async () => {
@@ -350,16 +273,19 @@ onMounted(() => {
       </NSpace>
 
       <!-- 数据表格 -->
-      <NDataTable :remote="true" :columns="columns" :data="shelves" :loading="loading" :pagination="{
-        page: page,
-        pageSize: pageSize,
-        itemCount: total,
-        showSizePicker: true,
-        pageSizes: [10, 20, 50],
-        onUpdatePage: handlePageChange,
-        onUpdatePageSize: handlePageSizeChange,
-        prefix: () => `共 ${total} 条`
-      }" :scroll-x="1000" />
+      <ShelfTable
+        :shelves="shelves"
+        :loading="loading"
+        :pagination="{
+          page,
+          pageSize,
+          total,
+          onChange: handlePageChange,
+          onSizeChange: handlePageSizeChange
+        }"
+        @edit="handleEdit"
+        @delete="handleDelete"
+      />
     </NCard>
 
     <!-- 创建/编辑弹窗 -->
@@ -421,9 +347,7 @@ onMounted(() => {
       <template #footer>
         <NSpace justify="end">
           <NButton @click="showModal = false">取消</NButton>
-          <NButton type="primary" :loading="modalLoading" @click="handleSubmit">
-            确认
-          </NButton>
+          <NButton type="primary" :loading="modalLoading" @click="handleSubmit">确认</NButton>
         </NSpace>
       </template>
     </NModal>
@@ -433,7 +357,5 @@ onMounted(() => {
 <style scoped>
 .page-container {
   padding: 24px;
-  min-height: 100vh;
-  background-color: #f5f5f5;
 }
 </style>
