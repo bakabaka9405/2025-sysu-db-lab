@@ -44,10 +44,11 @@
 
 // 段落样式
 #set par(
-  first-line-indent: 2em,
   justify: true,
   leading: 1em,
 )
+
+#show figure: set block(breakable: true)
 
 // 枚举样式
 #set enum(numbering: "1.a.i")

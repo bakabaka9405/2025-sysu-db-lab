@@ -14,7 +14,7 @@
     text(size: 11pt, weight: "bold")[用户\nUser],
     stroke: 2pt,
     shape: rect,
-    width: 2.2cm,
+    width: 2.5cm,
     height: 1.2cm,
     name: <user>,
   ),
@@ -25,18 +25,18 @@
     text(size: 11pt, weight: "bold")[包裹\nParcel],
     stroke: 2pt,
     shape: rect,
-    width: 2.2cm,
+    width: 2.8cm,
     height: 1.2cm,
     name: <parcel>,
   ),
 
   // 货架实体（右上）
   node(
-    (8, 0),
+    (4, -4),
     text(size: 11pt, weight: "bold")[货架\nShelf],
     stroke: 2pt,
     shape: rect,
-    width: 2.2cm,
+    width: 2.6cm,
     height: 1.2cm,
     name: <shelf>,
   ),
@@ -47,7 +47,7 @@
     text(size: 11pt, weight: "bold")[寄件\nShipment],
     stroke: 2pt,
     shape: rect,
-    width: 2.2cm,
+    width: 3.5cm,
     height: 1.2cm,
     name: <shipment>,
   ),
@@ -58,18 +58,18 @@
     text(size: 11pt, weight: "bold")[滞留记录\nOverdue],
     stroke: 2pt,
     shape: rect,
-    width: 2.5cm,
+    width: 4cm,
     height: 1.2cm,
     name: <overdue>,
   ),
 
   // 操作日志实体（右下）
   node(
-    (8, 4),
+    (0, -4),
     text(size: 11pt, weight: "bold")[操作日志\nLog],
     stroke: 2pt,
     shape: rect,
-    width: 2.2cm,
+    width: 3.2cm,
     height: 1.2cm,
     name: <log>,
   ),
@@ -80,7 +80,7 @@
   node((2, 0), text(size: 9pt)[收件], stroke: 1.5pt, shape: diamond, inset: 8pt, name: <rel-receive>),
 
   // 关系2：货架-包裹（存放）
-  node((6, 0), text(size: 9pt)[存放], stroke: 1.5pt, shape: diamond, inset: 8pt, name: <rel-store>),
+  node((4, -2), text(size: 9pt)[存放], stroke: 1.5pt, shape: diamond, inset: 8pt, name: <rel-store>),
 
   // 关系3：用户-寄件（发起）
   node((0, 2), text(size: 9pt)[发起], stroke: 1.5pt, shape: diamond, inset: 8pt, name: <rel-send>),
@@ -89,7 +89,7 @@
   node((4, 2), text(size: 9pt)[产生], stroke: 1.5pt, shape: diamond, inset: 8pt, name: <rel-overdue>),
 
   // 关系5：用户-操作日志（执行）
-  node((4, 5.5), text(size: 9pt)[执行], stroke: 1.5pt, shape: diamond, inset: 8pt, name: <rel-log>),
+  node((0, -2), text(size: 9pt)[执行], stroke: 1.5pt, shape: diamond, inset: 8pt, name: <rel-log>),
 
   // ===== 连接线与基数标注 =====
 
@@ -110,8 +110,6 @@
   edge(<rel-overdue>, <overdue>, label: text(size: 9pt)[1], label-pos: 0.7, label-side: left),
 
   // 用户 - 执行 - 操作日志（折线连接）
-  edge(<user>, (0, 5.5), stroke: 1.2pt),
-  edge((0, 5.5), <rel-log>, label: text(size: 9pt)[1], label-pos: 0.5, label-side: left),
-  edge(<rel-log>, (8, 5.5), label: text(size: 9pt)[N], label-pos: 0.5, label-side: left),
-  edge((8, 5.5), <log>, stroke: 1.2pt),
+  edge(<user>, <rel-log>, stroke: 1.2pt),
+  edge(<rel-log>, <log>, label: text(size: 9pt)[N], label-pos: 0.5, label-side: left),
 )

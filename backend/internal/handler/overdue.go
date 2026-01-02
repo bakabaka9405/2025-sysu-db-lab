@@ -106,7 +106,7 @@ func (h *OverdueHandler) BatchReturn(ctx *gin.Context) {
 // CheckOverdue godoc
 // @Summary 检查并标记滞留件
 // @Schemes
-// @Description 手动触发检查滞留件（通常由定时任务调用）
+// @Description 检查滞留件
 // @Tags 滞留件管理
 // @Accept json
 // @Produce json

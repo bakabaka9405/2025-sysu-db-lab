@@ -1,6 +1,3 @@
--- 包裹统计视图
--- 按日期、状态、快递公司聚合包裹统计数据
-
 CREATE OR REPLACE VIEW v_parcel_statistics AS
 SELECT
     DATE(received_at) as stat_date,

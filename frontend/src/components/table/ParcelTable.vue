@@ -53,7 +53,7 @@ const columns = computed<DataTableColumns<Parcel>>(() => {
 
   // 非紧凑模式下显示更多列
   if (!props.compact) {
-    cols.push({ title: '快递单号', key: 'tracking_number', width: 140 })
+    cols.push({ title: '快递单号', key: 'tracking_number', width: 180 })
   }
 
   // 收件人信息
@@ -92,7 +92,7 @@ const columns = computed<DataTableColumns<Parcel>>(() => {
   cols.push({
     title: '入库时间',
     key: 'received_at',
-    width: 160,
+    width: 200,
     render: (row) => formatDateTime(row.received_at)
   })
 

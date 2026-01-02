@@ -1,5 +1,3 @@
--- 包裹表
--- 存储包裹信息，是系统的核心数据表
 
 CREATE TABLE parcels (
     id BIGSERIAL PRIMARY KEY,
@@ -22,7 +20,6 @@ CREATE TABLE parcels (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMPTZ,
 
-    -- 约束条件
     CONSTRAINT chk_size_valid CHECK (
         size IN ('small', 'medium', 'large')
     ),
@@ -41,8 +38,6 @@ CREATE TABLE parcels (
         (shelved_at IS NOT NULL AND picked_up_at >= shelved_at)
     )
 );
-
--- 创建索引
 CREATE INDEX idx_parcels_tracking ON parcels(tracking_number) WHERE deleted_at IS NULL;
 CREATE INDEX idx_parcels_pickup_code ON parcels(pickup_code) WHERE deleted_at IS NULL;
 CREATE INDEX idx_parcels_recipient_phone ON parcels(recipient_phone) WHERE deleted_at IS NULL;

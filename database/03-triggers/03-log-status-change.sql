@@ -1,6 +1,3 @@
--- 状态变更日志触发器
--- 在包裹状态改变时自动记录操作日志
-
 CREATE OR REPLACE FUNCTION log_parcel_status_change()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -24,13 +21,10 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 CREATE TRIGGER trg_log_parcel_status_change
     AFTER UPDATE ON parcels
     FOR EACH ROW
     EXECUTE FUNCTION log_parcel_status_change();
-
--- 记录包裹入库日志
 CREATE OR REPLACE FUNCTION log_parcel_received()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -54,7 +48,6 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 CREATE TRIGGER trg_log_parcel_received
     AFTER INSERT ON parcels
     FOR EACH ROW

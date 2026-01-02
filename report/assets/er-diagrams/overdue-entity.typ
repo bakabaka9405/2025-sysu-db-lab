@@ -19,7 +19,14 @@
   ),
 
   // 属性节点 - 主键
-  node((0, -1.5), text(size: 9pt)[#underline[记录ID]], stroke: 1pt, shape: ellipse, inset: 6pt, name: <id>, height: 1cm),
+  node(
+    (0, -1.5),
+    text(size: 9pt)[#underline[记录ID]],
+    stroke: 1pt,
+    shape: ellipse,
+    inset: 6pt,
+    name: <id>,
+  ),
 
   // 属性节点 - 普通属性
   node(
@@ -29,7 +36,6 @@
     shape: ellipse,
     inset: 6pt,
     name: <start-time>,
-    height: 1cm,
   ),
   node(
     (2, -1),
@@ -38,7 +44,6 @@
     shape: ellipse,
     inset: 6pt,
     name: <remind-count>,
-    height: 1cm,
   ),
   node(
     (-2, 0.5),
@@ -47,10 +52,9 @@
     shape: ellipse,
     inset: 6pt,
     name: <last-remind>,
-    height: 1cm,
   ),
-  node((2, 0.5), text(size: 9pt)[滞留费用], stroke: 1pt, shape: ellipse, inset: 6pt, name: <fee>, height: 1cm),
-  node((0, 1.5), text(size: 9pt)[处理状态], stroke: 1pt, shape: ellipse, inset: 6pt, name: <status>, height: 1cm),
+  node((2, 0.5), text(size: 9pt)[滞留费用], stroke: 1pt, shape: ellipse, inset: 6pt, name: <fee>),
+  node((0, 1.5), text(size: 9pt)[处理状态], stroke: 1pt, shape: ellipse, inset: 6pt, name: <status>),
 
   // 连接线
   edge(<entity>, <id>),

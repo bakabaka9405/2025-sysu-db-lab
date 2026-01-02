@@ -1,6 +1,3 @@
--- 快递价格配置表
--- 存储各快递公司的运费计算配置
-
 CREATE TABLE courier_prices (
     id BIGSERIAL PRIMARY KEY,
     courier_company VARCHAR(50) NOT NULL UNIQUE,
@@ -10,17 +7,11 @@ CREATE TABLE courier_prices (
     is_active BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    -- 约束条件
     CONSTRAINT chk_first_weight_positive CHECK (first_weight > 0),
     CONSTRAINT chk_first_price_positive CHECK (first_price > 0),
     CONSTRAINT chk_additional_price_non_negative CHECK (additional_price >= 0)
 );
-
--- 创建索引
 CREATE INDEX idx_courier_prices_active ON courier_prices(is_active);
-
--- 插入常用快递公司价格配置
 INSERT INTO courier_prices (courier_company, first_weight, first_price, additional_price) VALUES
 ('顺丰速运', 1.0, 12.00, 2.00),
 ('中通快递', 1.0, 8.00, 1.50),
