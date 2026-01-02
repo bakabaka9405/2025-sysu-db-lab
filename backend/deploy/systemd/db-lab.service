@@ -1,0 +1,24 @@
+[Unit]
+Description=DB Lab Backend Server
+After=network.target docker.service
+
+[Service]
+Type=simple
+User=dblab
+Group=dblab
+WorkingDirectory=/data/db-lab
+ExecStart=/data/db-lab/server -conf /data/db-lab/prod.yml
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/data/db-lab
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
